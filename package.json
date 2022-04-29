@@ -1,0 +1,30 @@
+{
+  "name": "studbud_2022",
+  "version": "1.0.0",
+  "description": "Web Application For Studying.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YIWAN1/STUDBUD_2022.git"
+  },
+  "keywords": [
+    "STUDBUD",
+    "StudBud",
+    "Time",
+    "Management",
+    "Content",
+    "Management",
+    "Study",
+    "Management",
+    "Study"
+  ],
+  "author": "YI WAN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YIWAN1/STUDBUD_2022/issues"
+  },
+  "homepage": "https://github.com/YIWAN1/STUDBUD_2022#readme"
+}
