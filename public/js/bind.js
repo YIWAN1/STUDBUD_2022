@@ -1,12 +1,14 @@
 export class BindObject {
   _val = {};
+  _org = {};
   _me = null;
+  _tmr = 0;
 
   constructor(me) {
     this._me = me;
   }
 
-  _set(data) {
+  onlySet(data) {
     if (!data) {
       return;
     }
@@ -15,8 +17,24 @@ export class BindObject {
     }
   }
 
+  _render() {
+    if (this._me && this._me.viewRender) {
+      if (this._tmr) {
+        clearTimeout(this._tmr);
+      }
+      this._tmr = setTimeout(() => {
+        this._me.viewRender();
+      }, 10);
+    }
+  }
+
+  _clone(v) {
+    return JSON.parse(JSON.stringify(v));
+  }
+
   init(data) {
-    this._set(data);
+    this.onlySet(data);
+    this._org = this._clone(this._val);
 
     // children objects
     if (this._me && this._me.components && this._me.components.length > 0) {
@@ -29,22 +47,29 @@ export class BindObject {
   }
 
   set(data) {
-    this._set(data);
-
-    if (this._me && this._me.viewRender) {
-      this._me.viewRender();
-    }
+    this.onlySet(data);
+    this._render();
   }
 
   get() {
-    return this._val;
+    return this._clone(this._val);
   }
 
   clear() {
-    this._val = {};
-    if (this._me && this._me.viewRender) {
-      this._me.viewRender();
+    this._val = this._clone(this._org);
+    this._render();
+  }
+
+  onlyReset(k) {
+    if (!k || typeof this._org[k] == "undefined") {
+      return;
     }
+    this._val[k] = this._org[k];
+  }
+
+  reset(k) {
+    tshi.onlyReset(k);
+    this._render();
   }
 }
 
@@ -76,9 +101,9 @@ export const observeRender = (me, containerId, tpl, data) => {
   }
   const c = tpl.render(data);
   const cc = c
-    .replace("this.value", "__THIS__VALUE")
+    .replace(/this\.value/gi, "__THIS__VALUE")
     .replace(/this\./gi, "window.observeRun(" + me.__objectId + ").")
-    .replace("__THIS__VALUE", "this.value");
+    .replace(/__THIS__VALUE/gi, "this.value");
   const el = document.getElementById(containerId);
   if (el) {
     el.innerHTML = cc;

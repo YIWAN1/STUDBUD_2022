@@ -6,34 +6,46 @@
     </div>
     <div class="left__box">
       <div
-        class="menu-tag left__box-item Quickadd"
+        class="menu-item"
         onmouseover="this.showMenu('menuAdd')"
         onmouseleave="this.hideMenu()"
       >
-        <img src="assets/images/Quickadd.png" alt="" />
+        <div class="menu-tag left__box-item Quickadd">
+          <img src="assets/images/Quickadd.png" alt="" />
+        </div>
         <div id="menuAdd" class="menu-box menu-add" style="display: none">
           <div class="li unpointer li-tl">Quick Add</div>
-          <div class="li unpointer li-item">
-            <i class="mt-icon reorder"></i>Task
+          <div class="li li-item" onclick="this.onOpenAddForm('form1')">
+            <span class="flex unpointer"
+              ><i class="mt-icon reorder"></i>Task</span
+            >
           </div>
-          <div class="li unpointer li-item">
-            <i class="mt-icon chrome_reader_mode"></i>Reading
+          <div class="li li-item" onclick="this.onOpenAddForm('form2')">
+            <span class="flex unpointer"
+              ><i class="mt-icon chrome_reader_mode"></i>Reading</span
+            >
           </div>
         </div>
       </div>
       <div
-        class="menu-tag left__box-item Quicktimer"
+        class="menu-item"
         onmouseover="this.showMenu('menuTimer')"
         onmouseleave="this.hideMenu()"
       >
-        <img src="assets/images/Quicktimer.png" alt="" />
+        <div class="menu-tag left__box-item Quicktimer">
+          <img src="assets/images/Quicktimer.png" alt="" />
+        </div>
         <div id="menuTimer" class="menu-box menu-timer" style="display: none">
           <div class="li unpointer li-tl">Quick Timer</div>
           <div class="li unpointer li-item">
-            <i class="mt-icon timer"></i>Stopwatch Timer
+            <span class="flex unpointer"
+              ><i class="mt-icon timer"></i>Stopwatch Timer</span
+            >
           </div>
           <div class="li unpointer li-item">
-            <i class="mt-icon timelapse"></i>Flow Time Tracker
+            <span class="flex unpointer"
+              ><i class="mt-icon timelapse"></i>Flow Time Tracker</span
+            >
           </div>
         </div>
       </div>
@@ -542,22 +554,94 @@
   </div>
 </div>
 <div id="form1" class="form-box wh100" style="display: none">
-  <div class="flex-1"></div>
-  <div class="form-panel"></div>
-</div>
-<div id="form2" class="form-box wh100 flex">
-  <div class="flex-1"></div>
-  <div class="form-panel">
-    <div class="form-item">
-      <label>Input1</label>
-      <input
-        value="${form2.input1}"
-        placeholder="Please input"
-        onchange="this.setFormValue('form2', 'input1', this.value)"
-      />
+  <div class="flex wh100">
+    <div class="flex-1 h100" onclick="this.hideFloatLayer()"></div>
+    <div class="form-panel">
+      <div class="form-title">Add Task</div>
+      <div class="form-item">
+        <label>Task name</label>
+        <input
+          value="${form1.name}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form1', 'name', this.value)"
+        />
+      </div>
+      <div class="form-item">
+        <label>Due date</label>
+        <input
+          value="${form1.dueDate}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form1', 'dueDate', this.value)"
+        />
+      </div>
+      <div class="form-item">
+        <label>Task priority</label>
+        <input
+          value="${form1.taskPriority}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form1', 'taskPriority', this.value)"
+        />
+      </div>
+      <div class="form-item">
+        <label>Eestimate time</label>
+        <input
+          value="${form1.estimateTime}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form1', 'estimateTime', this.value)"
+        />
+      </div>
+      <div class="form-btns">
+        <button
+          type="button"
+          class="outline me-4"
+          onclick="this.hideFloatLayer()"
+        >
+          Cancel
+        </button>
+        <button type="button" onclick="this.onAddSave('form1')">Save</button>
+      </div>
     </div>
-    <div class="form-btns">
-      <button type="button" onclick="onSave('form2')">Add Save</button>
+  </div>
+</div>
+<div id="form2" class="form-box wh100 flex" style="display: none">
+  <div class="flex wh100">
+    <div class="flex-1 h100" onclick="this.hideFloatLayer()"></div>
+    <div class="form-panel">
+      <div class="form-title">Add Reading</div>
+      <div class="form-item">
+        <label>Name the reading</label>
+        <input
+          value="${form2.name}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form2', 'name', this.value)"
+        />
+      </div>
+      <div class="form-item">
+        <label>Read link</label>
+        <input
+          value="${form2.readLink}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form2', 'readLink', this.value)"
+        />
+      </div>
+      <div class="form-item">
+        <label>Project name</label>
+        <input
+          value="${form2.projectName}"
+          placeholder="Please input"
+          oninput="this.setFormValue('form2', 'projectName', this.value)"
+        />
+      </div>
+      <div class="form-btns">
+        <button
+          type="button"
+          class="outline me-4"
+          onclick="this.hideFloatLayer()"
+        >
+          Cancel
+        </button>
+        <button type="button" onclick="this.onAddSave('form2')">Save</button>
+      </div>
     </div>
   </div>
 </div>

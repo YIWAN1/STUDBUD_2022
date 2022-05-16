@@ -12,10 +12,13 @@
       }
     }
 
-    .menu-tag {
+    .menu-item {
       position: relative;
-      padding: 0 33rem;
       text-align: left;
+
+      .menu-tag {
+        padding: 0 33rem;
+      }
 
       .menu-box {
         position: absolute;
@@ -64,29 +67,43 @@
       background-color: white;
       text-align: left;
 
+      .form-title {
+        padding: 20px 20px 0 20px;
+        font-size: 40rem;
+        font-weight: bold;
+      }
+
       .form-item {
         display: block;
-        padding: 20px 20px 0 20px;
+        padding: 32px 32px 0 32px;
 
         label {
           display: block;
-          font-weight: 500;
+          font-weight: bold;
           margin-bottom: 8rem;
+          font-size: 16rem;
+          color: #000 !important;
         }
 
         input {
           display: block;
-          padding: 0px 6px;
-          border: 1px solid #ddd;
-          line-height: 30rem;
-          height: 30rem;
+          width: 100%;
+          padding: 0px 10px;
+          border: 1px solid #aaa;
+          line-height: 48rem;
+          height: 48rem;
           border-radius: 3px;
+          font-size: 16rem;
         }
       }
 
       .form-btns {
         padding: 40px 0 32px 0;
         text-align: center;
+
+        button {
+          font-size: 18rem;
+        }
       }
     }
   }

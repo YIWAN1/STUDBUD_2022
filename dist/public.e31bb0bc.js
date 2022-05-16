@@ -145,14 +145,18 @@ var BindObject = /*#__PURE__*/function () {
 
     _defineProperty(this, "_val", {});
 
+    _defineProperty(this, "_org", {});
+
     _defineProperty(this, "_me", null);
+
+    _defineProperty(this, "_tmr", 0);
 
     this._me = me;
   }
 
   _createClass(BindObject, [{
-    key: "_set",
-    value: function _set(data) {
+    key: "onlySet",
+    value: function onlySet(data) {
       if (!data) {
         return;
       }
@@ -162,10 +166,30 @@ var BindObject = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "_render",
+    value: function _render() {
+      var _this = this;
+
+      if (this._me && this._me.viewRender) {
+        if (this._tmr) {
+          clearTimeout(this._tmr);
+        }
+
+        this._tmr = setTimeout(function () {
+          _this._me.viewRender();
+        }, 10);
+      }
+    }
+  }, {
+    key: "_clone",
+    value: function _clone(v) {
+      return JSON.parse(JSON.stringify(v));
+    }
+  }, {
     key: "init",
     value: function init(data) {
-      this._set(data); // children objects
-
+      this.onlySet(data);
+      this._org = this._clone(this._val); // children objects
 
       if (this._me && this._me.components && this._me.components.length > 0) {
         var _iterator = _createForOfIteratorHelper(this._me.components),
@@ -189,25 +213,37 @@ var BindObject = /*#__PURE__*/function () {
   }, {
     key: "set",
     value: function set(data) {
-      this._set(data);
+      this.onlySet(data);
 
-      if (this._me && this._me.viewRender) {
-        this._me.viewRender();
-      }
+      this._render();
     }
   }, {
     key: "get",
     value: function get() {
-      return this._val;
+      return this._clone(this._val);
     }
   }, {
     key: "clear",
     value: function clear() {
-      this._val = {};
+      this._val = this._clone(this._org);
 
-      if (this._me && this._me.viewRender) {
-        this._me.viewRender();
+      this._render();
+    }
+  }, {
+    key: "onlyReset",
+    value: function onlyReset(k) {
+      if (!k || typeof this._org[k] == "undefined") {
+        return;
       }
+
+      this._val[k] = this._org[k];
+    }
+  }, {
+    key: "reset",
+    value: function reset(k) {
+      tshi.onlyReset(k);
+
+      this._render();
     }
   }]);
 
@@ -251,7 +287,7 @@ var observeRender = function observeRender(me, containerId, tpl, data) {
   }
 
   var c = tpl.render(data);
-  var cc = c.replace("this.value", "__THIS__VALUE").replace(/this\./gi, "window.observeRun(" + me.__objectId + ").").replace("__THIS__VALUE", "this.value");
+  var cc = c.replace(/this\.value/gi, "__THIS__VALUE").replace(/this\./gi, "window.observeRun(" + me.__objectId + ").").replace(/__THIS__VALUE/gi, "this.value");
   var el = document.getElementById(containerId);
 
   if (el) {
@@ -987,9 +1023,16 @@ var App = /*#__PURE__*/function () {
     key: "init",
     value: function init() {
       this.data.init({
-        form1: {},
+        form1: {
+          name: "",
+          dueDate: "",
+          taskPriority: "",
+          estimateTime: ""
+        },
         form2: {
-          input1: ""
+          name: "",
+          readLink: "",
+          projectName: ""
         }
       });
     }
@@ -1029,8 +1072,40 @@ var App = /*#__PURE__*/function () {
     }
   }, {
     key: "setFormValue",
-    value: function setFormValue(formName) {
-      console.log(arguments);
+    value: function setFormValue(formName, key, value) {
+      // console.log(formName, key, value, arguments);
+      var data = this.data.get();
+
+      if (!data[formName]) {
+        data[formName] = {};
+      }
+
+      data[formName][key] = value;
+      console.log(formName, key, value, data);
+      this.data.onlySet(data);
+    } // open form panel
+
+  }, {
+    key: "onOpenAddForm",
+    value: function onOpenAddForm(id) {
+      this.data.onlyReset(id);
+      this.hideFloatLayer();
+      document.getElementById(id).style.display = "block";
+    }
+  }, {
+    key: "hideFloatLayer",
+    value: function hideFloatLayer() {
+      var f1 = document.getElementById("form1");
+      var f2 = document.getElementById("form2");
+      f1.style.display = "none";
+      f2.style.display = "none";
+    }
+  }, {
+    key: "onAddSave",
+    value: function onAddSave(formName) {
+      var data = this.data.get();
+      console.log(data[formName]);
+      this.hideFloatLayer();
     }
   }]);
 
@@ -1104,7 +1179,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64392" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64546" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

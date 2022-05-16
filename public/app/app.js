@@ -27,9 +27,16 @@ export class App {
 
   init() {
     this.data.init({
-      form1: {},
+      form1: {
+        name: "",
+        dueDate: "",
+        taskPriority: "",
+        estimateTime: "",
+      },
       form2: {
-        input1: "",
+        name: "",
+        readLink: "",
+        projectName: "",
       },
     });
   }
@@ -54,10 +61,34 @@ export class App {
   }
 
   setFormValue(formName, key, value) {
-    console.log(arguments);
+    // console.log(formName, key, value, arguments);
+    const data = this.data.get();
+    if (!data[formName]) {
+      data[formName] = {};
+    }
+    data[formName][key] = value;
+    console.log(formName, key, value, data);
+    this.data.onlySet(data);
   }
 
-  setFormValue(formName) {
-    console.log(arguments);
+  // open form panel
+  onOpenAddForm(id) {
+    this.data.onlyReset(id);
+    this.hideFloatLayer();
+    document.getElementById(id).style.display = "block";
+  }
+
+  hideFloatLayer() {
+    const f1 = document.getElementById("form1");
+    const f2 = document.getElementById("form2");
+    f1.style.display = "none";
+    f2.style.display = "none";
+  }
+
+  onAddSave(formName) {
+    const data = this.data.get();
+    console.log(data[formName]);
+
+    this.hideFloatLayer();
   }
 }
