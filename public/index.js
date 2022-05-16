@@ -1,5 +1,6 @@
 import { App } from "./app/app.js";
 import { observeInit } from "./js/bind.js";
+import { kvdb } from "./js/kvdb.js";
 import juicer from "juicer";
 
 import "./main.scss";
@@ -15,6 +16,8 @@ import "./main.scss";
     "tag::commentOpen": "{#", // 
     "tag::commentClose": "}",
   });
+
+  kvdb.init();
 
   observeInit();
 

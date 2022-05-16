@@ -3,6 +3,7 @@ import juicer from "juicer";
 
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
+import { kvdb } from "../js/kvdb";
 const compiledTpl = juicer(require("./app.shtml"));
 
 export class App {
@@ -27,6 +28,8 @@ export class App {
 
   init() {
     this.data.init({
+      readList: [],
+      taskList: [],
       form1: {
         name: "",
         dueDate: "",
@@ -39,6 +42,19 @@ export class App {
         projectName: "",
       },
     });
+
+    this.getData();
+  }
+
+  async getData() {
+    const taskList = await kvdb.get("taskList", []);
+    const readList = await kvdb.get("readList", []);
+
+    const data = this.data.get();
+    data["taskList"] = taskList ? taskList : [];
+    data["readList"] = taskList ? readList : [];
+
+    this.data.set(data);
   }
 
   viewRender() {
@@ -67,13 +83,11 @@ export class App {
       data[formName] = {};
     }
     data[formName][key] = value;
-    console.log(formName, key, value, data);
     this.data.onlySet(data);
   }
 
   // open form panel
   onOpenAddForm(id) {
-    this.data.onlyReset(id);
     this.hideFloatLayer();
     document.getElementById(id).style.display = "block";
   }
@@ -85,10 +99,73 @@ export class App {
     f2.style.display = "none";
   }
 
+  onCancel() {
+    this.hideFloatLayer();
+
+    this.data.onlyReset("form1");
+    this.data.onlyReset("form2");
+    this.viewRender();
+  }
+
   onAddSave(formName) {
     const data = this.data.get();
-    console.log(data[formName]);
+    const formData = data[formName];
+    console.log("formData", formData);
 
     this.hideFloatLayer();
+
+    if (formName == "form1") {
+      this.addTask(formData);
+    } else if (formName == "form2") {
+      this.addReading(formData);
+    }
+
+    this.data.onlyReset("form1");
+    this.data.onlyReset("form2");
+    this.viewRender();
+  }
+
+  // add task
+  addTask(formData) {
+    if (!formData) {
+      return;
+    }
+
+    const data = this.data.get();
+    const list = data["taskList"];
+    if (!list) {
+      list = [];
+    }
+    list.unshift(formData);
+
+    if (list.length > 4) {
+      list.pop();
+    }
+    data["taskList"] = list;
+
+    this.data.onlySet(data);
+    kvdb.set("taskList", list);
+  }
+
+  // add reading
+  addReading(formData) {
+    if (!formData) {
+      return;
+    }
+
+    const data = this.data.get();
+    const list = data["readList"];
+    if (!list) {
+      list = [];
+    }
+    list.unshift(formData);
+
+    if (list.length > 4) {
+      list.pop();
+    }
+    data["readList"] = list;
+
+    this.data.onlySet(data);
+    kvdb.set("readList", list);
   }
 }

@@ -91,6 +91,7 @@
               class="content__Reading__h__Openlink"
             />
           </div>
+          {@each readList as item}
           <div class="content__Reading__c">
             <div class="content__Reading__c__h">
               <div class="content__Reading__c__h__text">Group Name</div>
@@ -103,58 +104,11 @@
                 class="content__Reading__c__h__Openlink"
               />
             </div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
+            <div class="content__Reading__c__box">${item.name}</div>
+            <div class="content__Reading__c__box">${item.readLink}</div>
+            <div class="content__Reading__c__box">${item.projectName}</div>
           </div>
-          <div class="content__Reading__c">
-            <div class="content__Reading__c__h">
-              <div class="content__Reading__c__h__text">Group Name</div>
-              <img
-                src="assets/images/Add.png"
-                class="content__Reading__c__h__Add"
-              />
-              <img
-                src="assets/images/Openlink.png"
-                class="content__Reading__c__h__Openlink"
-              />
-            </div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-          </div>
-          <div class="content__Reading__c">
-            <div class="content__Reading__c__h">
-              <div class="content__Reading__c__h__text">Group Name</div>
-              <img
-                src="assets/images/Add.png"
-                class="content__Reading__c__h__Add"
-              />
-              <img
-                src="assets/images/Openlink.png"
-                class="content__Reading__c__h__Openlink"
-              />
-            </div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-          </div>
-          <div class="content__Reading__c">
-            <div class="content__Reading__c__h">
-              <div class="content__Reading__c__h__text">Group Name</div>
-              <img
-                src="assets/images/Add.png"
-                class="content__Reading__c__h__Add"
-              />
-              <img
-                src="assets/images/Openlink.png"
-                class="content__Reading__c__h__Openlink"
-              />
-            </div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-            <div class="content__Reading__c__box"></div>
-          </div>
+          {@/each}
         </div>
 
         <!-- To Do——Task List  -->
@@ -163,83 +117,26 @@
             <div class="content__toDo__h__text">To Do</div>
             <img src="assets/images/Add.png" class="content__toDo__h__Add" />
           </div>
+          {@each taskList as item}
           <div class="content__toDo__box">
             <div class="content__toDo__box__one">
-              Brainstorming
+              ${item.name}
               <img src="assets/images/High.png" alt="" />
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
                 <span class="content__toDo__box__two-item__title"
                   >Est. Time:</span
-                ><span>1h30m</span>
+                ><span>${item.estimateTime}</span>
               </div>
               <div class="content__toDo__box__two-item">
                 <span class="content__toDo__box__two-item__title"
                   >Due Date:</span
-                ><span>06/04/2022</span>
+                ><span>${item.dueDate}</span>
               </div>
             </div>
           </div>
-          <div class="content__toDo__box">
-            <div class="content__toDo__box__one">
-              Research
-              <img
-                class="content__two__boxs__title__lone"
-                img
-                src="assets/images/Medium.png"
-                alt=""
-              />
-            </div>
-            <div class="content__toDo__box__two">
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Est. Time:</span
-                ><span>1h30m</span>
-              </div>
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Due Date:</span
-                ><span>06/04/2022</span>
-              </div>
-            </div>
-          </div>
-          <div class="content__toDo__box">
-            <div class="content__toDo__box__one">
-              Brainstorming
-              <img src="assets/images/Low.png" alt="" />
-            </div>
-            <div class="content__toDo__box__two">
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Est. Time:</span
-                ><span>1h30m</span>
-              </div>
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Due Date:</span
-                ><span>06/04/2022</span>
-              </div>
-            </div>
-          </div>
-          <div class="content__toDo__box">
-            <div class="content__toDo__box__one">
-              Brainstorming
-              <img src="assets/images/High.png" alt="" />
-            </div>
-            <div class="content__toDo__box__two">
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Est. Time:</span
-                ><span>1h30m</span>
-              </div>
-              <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Due Date:</span
-                ><span>06/04/2022</span>
-              </div>
-            </div>
-          </div>
+          {@/each}
         </div>
       </div>
 
@@ -555,7 +452,7 @@
 </div>
 <div id="form1" class="form-box wh100" style="display: none">
   <div class="flex wh100">
-    <div class="flex-1 h100" onclick="this.hideFloatLayer()"></div>
+    <div class="flex-1 h100" onclick="this.onCancel()"></div>
     <div class="form-panel">
       <div class="form-title">Add Task</div>
       <div class="form-item">
@@ -594,7 +491,7 @@
         <button
           type="button"
           class="outline me-4"
-          onclick="this.hideFloatLayer()"
+          onclick="this.onCancel()"
         >
           Cancel
         </button>
@@ -605,7 +502,7 @@
 </div>
 <div id="form2" class="form-box wh100 flex" style="display: none">
   <div class="flex wh100">
-    <div class="flex-1 h100" onclick="this.hideFloatLayer()"></div>
+    <div class="flex-1 h100" onclick="this.onCancel()"></div>
     <div class="form-panel">
       <div class="form-title">Add Reading</div>
       <div class="form-item">
@@ -636,7 +533,7 @@
         <button
           type="button"
           class="outline me-4"
-          onclick="this.hideFloatLayer()"
+          onclick="this.onCancel()"
         >
           Cancel
         </button>

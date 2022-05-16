@@ -100,6 +100,12 @@ export const observeRender = (me, containerId, tpl, data) => {
     return;
   }
   const c = tpl.render(data);
+  // console.log('c', c, tpl, data);
+  if(!c) {
+    console.log('template parse error in .shtml file')
+    return;
+  }
+
   const cc = c
     .replace(/this\.value/gi, "__THIS__VALUE")
     .replace(/this\./gi, "window.observeRun(" + me.__objectId + ").")

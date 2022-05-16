@@ -107,6 +107,11 @@
   font-size: 18rem;
 }
 
+#app .content__Reading__c .content__Reading__c__box {
+  color: #fff;
+  padding: 0 8rem;
+}
+
 .view-footer span {
   font-size: 64px !important;
 }
