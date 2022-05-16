@@ -1,41 +1,46 @@
 {
-  "name": "studbud_2022",
+  "name": "studbud",
   "version": "1.0.0",
   "description": "Web Application For Studying.",
-  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "prestart": "parcel build ./public/index.html",
+    "prestart": "node tools/build-prev.js && parcel build ./public/index.html && node tools/build-next.js",
     "dev": "parcel serve ./public/index.html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YIWAN1/STUDBUD_2022.git"
+    "url": "git+https://github.com/YIWAN1/STUDBUD.git"
   },
-  "keywords": [
-    "STUDBUD",
-    "StudBud",
-    "Time",
-    "Management",
-    "Content",
-    "Management",
-    "Study",
-    "Management",
-    "Study"
-  ],
   "author": "YI WAN",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/YIWAN1/STUDBUD_2022/issues"
+    "url": "https://github.com/YIWAN1/STUDBUD/issues"
   },
-  "homepage": "https://github.com/YIWAN1/STUDBUD_2022#readme",
+  "homepage": "https://github.com/YIWAN1/STUDBUD#readme",
   "dependencies": {
+    "@templatejs/runtime": "^2.4.0",
     "express": "^4.18.0",
+    "juicer": "^0.6.15",
     "sass": "^1.51.0"
   },
   "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.5.0",
     "@parcel/transformer-sass": "^2.5.0",
-    "parcel": "^2.5.0"
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "parcel": "^2.5.0",
+    "parcel-plugin-template": "^2.4.2",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "querystring-es3": "^0.2.1",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0"
+  },
+  "syncStaticDir": {
+    "src": "public/assets",
+    "dest": "dist/assets"
   }
 }
