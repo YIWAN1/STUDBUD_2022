@@ -37,12 +37,12 @@
         </div>
         <div id="menuTimer" class="menu-box menu-timer" style="display: none">
           <div class="li unpointer li-tl">Quick Timer</div>
-          <div class="li unpointer li-item">
+          <div class="li li-item" onclick="this.startTimer()">
             <span class="flex unpointer"
               ><i class="mt-icon timer"></i>Stopwatch Timer</span
             >
           </div>
-          <div class="li unpointer li-item">
+          <div class="li li-item" onclick="this.stopTimer()">
             <span class="flex unpointer"
               ><i class="mt-icon timelapse"></i>Flow Time Tracker</span
             >
@@ -400,22 +400,27 @@
     <div class="footer">
       <!--  Stopwatch Timer > -->
       <div class="footer__console">
-        <div class="footer__console__time">00:27:03</div>
+        <div id="footer__console__time" class="footer__console__time">
+          00:00:00
+        </div>
         <div class="footer__console__b">
           <img
             class="footer__console__b__start"
             src="assets/images/Start.png"
             alt=""
+            onclick="this.timeCountPause()"
           />
           <img
             class="footer__console__b__open"
             src="assets/images/Open.png"
             alt=""
+            onclick="this.stopTimer()"
           />
           <img
             class="footer__console__b__Return"
             src="assets/images/return.png"
             alt=""
+            onclick="this.timeCountRun()"
           />
         </div>
       </div>
@@ -488,11 +493,7 @@
         />
       </div>
       <div class="form-btns">
-        <button
-          type="button"
-          class="outline me-4"
-          onclick="this.onCancel()"
-        >
+        <button type="button" class="outline me-4" onclick="this.onCancel()">
           Cancel
         </button>
         <button type="button" onclick="this.onAddSave('form1')">Save</button>
@@ -530,11 +531,7 @@
         />
       </div>
       <div class="form-btns">
-        <button
-          type="button"
-          class="outline me-4"
-          onclick="this.onCancel()"
-        >
+        <button type="button" class="outline me-4" onclick="this.onCancel()">
           Cancel
         </button>
         <button type="button" onclick="this.onAddSave('form2')">Save</button>

@@ -4,6 +4,7 @@ import juicer from "juicer";
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
+import { formatTime } from "../js/utils";
 const compiledTpl = juicer(require("./app.shtml"));
 
 export class App {
@@ -14,6 +15,8 @@ export class App {
 
   data = {};
   containerId = "";
+
+  timeCount = 0;
 
   constructor(id) {
     this.data = new BindObject(this);
@@ -167,5 +170,44 @@ export class App {
 
     this.data.onlySet(data);
     kvdb.set("readList", list);
+  }
+
+  startTimer() {
+    this.timeCount = 0;
+    this.timeCountRun();
+  }
+
+  timeCountRun() {
+    if (this.timeCountId) {
+      clearTimeout(this.timeCountId);
+      this.timeCountId = 0;
+    }
+
+    document.getElementById("footer__console__time").innerHTML = formatTime(
+      this.timeCount
+    );
+    this.timeCount++;
+
+    this.timeCountId = setTimeout(() => {
+      this.timeCountRun();
+    }, 1000);
+  }
+
+  timeCountPause() {
+    if (this.timeCountId) {
+      clearTimeout(this.timeCountId);
+      this.timeCountId = 0;
+    }
+  }
+
+  stopTimer() {
+    if (this.timeCountId) {
+      clearTimeout(this.timeCountId);
+      this.timeCountId = 0;
+    }
+    this.timeCount = 0;
+    document.getElementById("footer__console__time").innerHTML = formatTime(
+      this.timeCount
+    );
   }
 }

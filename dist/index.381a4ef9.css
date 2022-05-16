@@ -22,14 +22,14 @@
 }
 
 #app .left .menu-item .menu-box {
-  width: 180rem;
+  width: 200rem;
   z-index: 100;
   background-color: #fff;
   border-radius: 8rem;
   padding: 8rem 10rem;
   position: absolute;
   top: 6rem;
-  right: -170rem;
+  right: -190rem;
   box-shadow: 1px 3px 10px #0006;
 }
 
