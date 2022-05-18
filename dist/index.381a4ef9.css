@@ -947,6 +947,26 @@ body {
   flex: 5;
 }
 
+#menus {
+  text-align: center;
+  width: 80px;
+  background: #fff;
+  border: 1px solid #000;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  line-height: 35px;
+  list-style: none;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#menus li {
+  cursor: pointer;
+}
+
 button {
   color: #fff;
   background-color: #4343fa;

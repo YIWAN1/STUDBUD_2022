@@ -5,6 +5,7 @@ import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
 import { formatTime, randId } from "../js/utils";
+import { is } from "express/lib/request";
 const compiledTpl = juicer(require("./app.shtml"));
 
 export class App {
@@ -46,6 +47,7 @@ export class App {
         projectName: "",
       },
     });
+    console.log("111");
 
     this.getData();
   }
@@ -120,7 +122,7 @@ export class App {
       formData.id = randId(); // set data id
     }
 
-    console.log("formData", formsaveData);
+    console.log("formData", formData);
     this.hideFloatLayer();
 
     if (formName == "form1") {
@@ -146,7 +148,7 @@ export class App {
       list = [];
     }
 
-    if (usAdd) {
+    if (isAdd) {
       list.unshift(formData);
 
       if (list.length > 4) {
@@ -198,6 +200,11 @@ export class App {
 
   startTimer() {
     this.timeCount = 0;
+    document.getElementById("right__header__title").innerHTML =
+      "What are you working on?";
+    document.getElementById("footer__console__b__stop").style.display =
+      "inline-block";
+    document.getElementById("footer__console__b__open").style.display = "none";
     this.timeCountRun();
   }
 
@@ -224,7 +231,7 @@ export class App {
     }
   }
 
-  stopTimer() {
+  stopTimer(istit) {
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
@@ -233,22 +240,74 @@ export class App {
     document.getElementById("footer__console__time").innerHTML = formatTime(
       this.timeCount
     );
+    document.getElementById("footer__console__b__stop").style.display = "none";
+    document.getElementById("footer__console__b__open").style.display =
+      "inline-block";
+    if (istit) {
+      document.getElementById("right__header__title").innerHTML =
+        "Write down what are you going there.";
+    }
   }
 
   // 音频播放。。。
-  play(){
-      var myaudio = document.getElementById('myaudio');
-      console.log(myaudio)
-      myaudio.play();
-      document.getElementById('play').style.display = 'none';
-      document.getElementById('stop').style.display = 'inline-block';
-
+  play() {
+    var myaudio = document.getElementById("myaudio");
+    console.log(myaudio);
+    myaudio.play();
+    document.getElementById("play").style.display = "none";
+    document.getElementById("stop").style.display = "inline-block";
   }
-  closePlay(){
-    var myaudio = document.getElementById('myaudio');
-    console.log(myaudio)
+  closePlay() {
+    var myaudio = document.getElementById("myaudio");
+    console.log(myaudio);
     myaudio.pause();
-    document.getElementById('stop').style.display = 'none';
-    document.getElementById('play').style.display = 'inline-block';
-}
+    document.getElementById("stop").style.display = "none";
+    document.getElementById("play").style.display = "inline-block";
+  }
+  menus(id, type) {
+    var acac = this;
+    event.preventDefault();
+    var oM = document.getElementById("menus");
+    var oEvt = event;
+    oM.style.display = "block";
+    oM.style.left = oEvt.clientX + "px";
+    oM.style.top = oEvt.clientY + "px";
+    document.getElementById("sc").onclick = function () {
+      oM.style.display = "none";
+      acac.cancel(id, type);
+    };
+  }
+  cancel(id, type) {
+    var data = this.data.get();
+    var list = data[type];
+    list.forEach((v, i) => {
+      if (v.id === id) {
+        list.splice(i, 1);
+      }
+    });
+    data[type] = list;
+    this.data.set(data);
+    kvdb.set(type, list);
+  }
+  acac() {
+    document.getElementById("menus").style.display = "none";
+  }
+
+  change(type, listName, id) {
+    var data = this.data.get(),
+      list = data[listName],
+      items;
+    list.forEach((v, i) => {
+      if (v.id === id) {
+        items = v;
+      }
+    });
+    data[type] = items;
+    this.data.onlySet(data);
+    this.viewRender();
+
+    console.log(type, items)
+    console.log(this.data.get())
+    this.onOpenAddForm(type)
+  }
 }

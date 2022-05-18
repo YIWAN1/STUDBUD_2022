@@ -880,6 +880,25 @@ body {
   flex: 5;
 }
 
+#menus {
+  margin: 0;padding: 0;
+  text-align: center;
+  line-height: 35px;
+  width: 80px;
+  border: 1px solid black;
+  border: 1px solid black;
+  position: absolute;
+  left: 0;
+  top: 0;
+  list-style: none;
+  display: none;
+  outline: none;
+  background: white;
+  li{
+    cursor: pointer;
+  }
+}
+
 /*****************************/
 
 button {
@@ -895,6 +914,8 @@ button.outline {
   background-color: white;
   color: gray;
 }
+
+
 
 
 /*****************************/

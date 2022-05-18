@@ -1,4 +1,4 @@
-<div class="box">
+<div class="box" onclick="this.acac()">
   <!-- Left Bar -->
   <div class="left">
     <div class="left__Favicon">
@@ -42,7 +42,7 @@
               ><i class="mt-icon timer"></i>Stopwatch Timer</span
             >
           </div>
-          <div class="li li-item" onclick="this.stopTimer()">
+          <div class="li li-item" onclick="this.stopTimer(true)">
             <span class="flex unpointer"
               ><i class="mt-icon timelapse"></i>Flow Time Tracker</span
             >
@@ -58,7 +58,10 @@
   <div class="right">
     <!-- Top Flow Time Tracker -->
     <div class="right__header">
-      <div class="right__header__title">What are you working on?</div>
+      <div id="right__header__title" class="right__header__title">
+        What are you working on?
+      </div>
+      <!-- <div id="Tracker" style="display: none;" class="right__header__title">Write down what are you going there.</div> -->
       <div class="right__header__date">00:22:33</div>
       <div class="right__header__button">
         <img
@@ -85,14 +88,18 @@
         <div class="content__Reading">
           <div class="content__Reading__h">
             <div class="content__Reading__h__text">Reading</div>
-            <img src="assets/images/Add.png" class="content__Reading__h__Add" />
+            <img
+              src="assets/images/Add.png"
+              onclick="this.onOpenAddForm('form2')"
+              class="content__Reading__h__Add"
+            />
             <img
               src="assets/images/Openlink.png"
               class="content__Reading__h__Openlink"
             />
           </div>
           {@each readList as item}
-          <div class="content__Reading__c">
+          <div ondblclick="this.change('form2','readList','${item.id}')" oncontextmenu="this.menus('${item.id}','readList')" class="content__Reading__c">
             <div class="content__Reading__c__h">
               <div class="content__Reading__c__h__text">Group Name</div>
               <img
@@ -115,10 +122,14 @@
         <div class="content__toDo">
           <div class="content__toDo__h">
             <div class="content__toDo__h__text">To Do</div>
-            <img src="assets/images/Add.png" class="content__toDo__h__Add" />
+            <img
+              src="assets/images/Add.png"
+              onclick="this.onOpenAddForm('form1')"
+              class="content__toDo__h__Add"
+            />
           </div>
           {@each taskList as item}
-          <div class="content__toDo__box">
+          <div ondblclick="this.change('form1','taskList','${item.id}')" oncontextmenu="this.menus('${item.id}','taskList')" class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
               <img src="assets/images/High.png" alt="" />
@@ -411,10 +422,19 @@
             onclick="this.timeCountPause()"
           />
           <img
+            id="footer__console__b__stop"
             class="footer__console__b__open"
+            style="display: none"
             src="assets/images/Open.png"
             alt=""
             onclick="this.stopTimer()"
+          />
+          <img
+            id="footer__console__b__open"
+            class="footer__console__b__open"
+            src="assets/images/Stop.png"
+            alt=""
+            onclick="this.startTimer()"
           />
           <img
             class="footer__console__b__Return"
@@ -426,8 +446,11 @@
       </div>
 
       <!-- Music Player > -->
-      <div style="display: none;">
-        <audio id="myaudio" src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"></audio>
+      <div style="display: none">
+        <audio
+          id="myaudio"
+          src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"
+        ></audio>
       </div>
       <div class="footer__display">
         <img src="assets/images/Song.png" class="footer__display__photo" />
@@ -438,8 +461,19 @@
         <div class="footer__display__center">
           <div class="footer__display__center__cons">
             <img src="assets/images/Last.png" alt="" />
-            <img src="assets/images/Play.png" id="stop" style="display: none;" onclick="this.closePlay()" alt="" />
-            <img src="assets/images/Stop.png" id="play" onclick="this.play()" alt="" />
+            <img
+              src="assets/images/Play.png"
+              id="stop"
+              style="display: none"
+              onclick="this.closePlay()"
+              alt=""
+            />
+            <img
+              src="assets/images/Stop.png"
+              id="play"
+              onclick="this.play()"
+              alt=""
+            />
             <img src="assets/images/Next.png" alt="" />
           </div>
           <div class="footer__display__center__progressbar">
@@ -543,3 +577,6 @@
     </div>
   </div>
 </div>
+<ul id="menus">
+  <li id="sc">删除</li>
+</ul>
