@@ -4,13 +4,12 @@ import juicer from "juicer";
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
-import { formatTime } from "../js/utils";
+import { formatTime, randId } from "../js/utils";
 const compiledTpl = juicer(require("./app.shtml"));
 
 export class App {
   //
   components = [];
-
   componentFooter;
 
   data = {};
@@ -34,12 +33,14 @@ export class App {
       readList: [],
       taskList: [],
       form1: {
+        id: "",
         name: "",
         dueDate: "",
         taskPriority: "",
         estimateTime: "",
       },
       form2: {
+        id: "",
         name: "",
         readLink: "",
         projectName: "",
@@ -113,14 +114,19 @@ export class App {
   onAddSave(formName) {
     const data = this.data.get();
     const formData = data[formName];
-    console.log("formData", formData);
+    var isAdd = false;
+    if (!formData.id) {
+      isAdd = true;
+      formData.id = randId(); // set data id
+    }
 
+    console.log("formData", formsaveData);
     this.hideFloatLayer();
 
     if (formName == "form1") {
-      this.addTask(formData);
+      this.editTask(formData, isAdd);
     } else if (formName == "form2") {
-      this.addReading(formData);
+      this.editReading(formData, isAdd);
     }
 
     this.data.onlyReset("form1");
@@ -129,7 +135,7 @@ export class App {
   }
 
   // add task
-  addTask(formData) {
+  editTask(formData, isAdd) {
     if (!formData) {
       return;
     }
@@ -139,11 +145,21 @@ export class App {
     if (!list) {
       list = [];
     }
-    list.unshift(formData);
 
-    if (list.length > 4) {
-      list.pop();
+    if (usAdd) {
+      list.unshift(formData);
+
+      if (list.length > 4) {
+        list.pop();
+      }
+    } else {
+      for (var k in list) {
+        if (list[k].id == formData.id) {
+          list[k] = formData;
+        }
+      }
     }
+
     data["taskList"] = list;
 
     this.data.onlySet(data);
@@ -151,7 +167,7 @@ export class App {
   }
 
   // add reading
-  addReading(formData) {
+  editReading(formData, isAdd) {
     if (!formData) {
       return;
     }
@@ -161,10 +177,18 @@ export class App {
     if (!list) {
       list = [];
     }
-    list.unshift(formData);
 
-    if (list.length > 4) {
-      list.pop();
+    if (isAdd) {
+      list.unshift(formData);
+      if (list.length > 4) {
+        list.pop();
+      }
+    } else {
+      for (var k in list) {
+        if (list[k].id == formData.id) {
+          list[k] = formData;
+        }
+      }
     }
     data["readList"] = list;
 
@@ -210,4 +234,21 @@ export class App {
       this.timeCount
     );
   }
+
+  // 音频播放。。。
+  play(){
+      var myaudio = document.getElementById('myaudio');
+      console.log(myaudio)
+      myaudio.play();
+      document.getElementById('play').style.display = 'none';
+      document.getElementById('stop').style.display = 'inline-block';
+
+  }
+  closePlay(){
+    var myaudio = document.getElementById('myaudio');
+    console.log(myaudio)
+    myaudio.pause();
+    document.getElementById('stop').style.display = 'none';
+    document.getElementById('play').style.display = 'inline-block';
+}
 }

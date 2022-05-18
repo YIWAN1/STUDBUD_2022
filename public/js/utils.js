@@ -13,3 +13,9 @@ export const formatTime = (c) => {
     (s > 9 ? s : "0" + s)
   );
 };
+
+
+export const randId = () => {
+  const c = 'ID' + Math.random();
+  return c.replace(/[^0-1a-zA-Z]+/ig, '');
+}

@@ -426,6 +426,9 @@
       </div>
 
       <!-- Music Player > -->
+      <div style="display: none;">
+        <audio id="myaudio" src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"></audio>
+      </div>
       <div class="footer__display">
         <img src="assets/images/Song.png" class="footer__display__photo" />
         <div class="footer__display__info">
@@ -435,7 +438,8 @@
         <div class="footer__display__center">
           <div class="footer__display__center__cons">
             <img src="assets/images/Last.png" alt="" />
-            <img src="assets/images/Play.png" alt="" />
+            <img src="assets/images/Play.png" id="stop" style="display: none;" onclick="this.closePlay()" alt="" />
+            <img src="assets/images/Stop.png" id="play" onclick="this.play()" alt="" />
             <img src="assets/images/Next.png" alt="" />
           </div>
           <div class="footer__display__center__progressbar">
