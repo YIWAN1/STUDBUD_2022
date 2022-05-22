@@ -14,8 +14,17 @@ export const formatTime = (c) => {
   );
 };
 
+export const formatTime2 = (c) => {
+  const n = Math.round(c);
+  var s = formatTime(n);
+  if (s.indexOf("00:") == 0) {
+    s = s.substr(3);
+  }
+  return s;
+};
+
 export const randId = () => {
-  const c = "ID" + formatDate(new Date, 'yyMMddhhmmss') + Math.random();
+  const c = "ID" + formatDate(new Date(), "yyMMddhhmmss") + Math.random();
   return c.replace(/[^0-1a-zA-Z]+/gi, "");
 };
 

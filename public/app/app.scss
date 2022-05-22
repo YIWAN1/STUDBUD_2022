@@ -117,7 +117,6 @@
     }
   }
 
-
   .right__header__title {
     input.flow-time-name {
       font-size: 36rem;
@@ -134,5 +133,18 @@
     font-weight: bold;
   }
 
-}
+  .content__two__box {
+    border: 2px dashed transparent;
+  }
+  .content__two__box:hover {
+    background-color: #e2e2e2;
+    border-color: orange;
+  }
 
+  .lone {
+    .cur {
+      display: inline-block;
+      width: 0%;
+    }
+  }
+}

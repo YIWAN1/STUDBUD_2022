@@ -4,9 +4,25 @@ import juicer from "juicer";
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
-import { formatTime, getUnixSeconds, randId } from "../js/utils";
+import { formatTime, formatTime2, getUnixSeconds, randId } from "../js/utils";
 import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
+
+var _isBindEvent = false;
+var _dragMaster = null;
+
+// global
+function sysDragMove(e) {
+  if (_dragMaster) {
+    _dragMaster.dragMove(e);
+  }
+}
+
+function sysDragUp(e) {
+  if (_dragMaster) {
+    _dragMaster.dragUp(e);
+  }
+}
 
 export class App {
   //
@@ -16,6 +32,7 @@ export class App {
   data = {};
   trackerItem = null;
   containerId = "";
+  dEle = null;
 
   timeCount = 0;
   trackerTimer = 0;
@@ -53,7 +70,6 @@ export class App {
         projectName: "",
       },
     });
-    console.log("111");
 
     this.getData();
   }
@@ -135,7 +151,6 @@ export class App {
       formData.id = randId(); // set data id
     }
 
-    console.log("formData", formData);
     this.hideFloatLayer();
 
     if (formName == "form1") {
@@ -150,13 +165,21 @@ export class App {
   }
 
   // save item data to list
-  editListItem(listName, formData, isAdd) {
+  editListItem(listName, formData, isAdd, isDel) {
     if (!formData) {
       return;
     }
 
+    if (isDel) {
+      isAdd = false;
+    }
+
+    if (formData.id) {
+      isAdd = false;
+    }
+
     const data = this.data.get();
-    const list = data[listName];
+    var list = data[listName];
     if (!list) {
       list = [];
     }
@@ -168,9 +191,24 @@ export class App {
         list.pop();
       }
     } else {
-      for (var k in list) {
-        if (list[k].id == formData.id) {
-          list[k] = formData;
+      if (isDel) {
+        const arr = [];
+        for (const k in list) {
+          if (list[k].id && list[k].id != formData.id) {
+            arr.push(list[k]);
+          }
+        }
+        list = arr;
+      } else {
+        var hv = false;
+        for (const k in list) {
+          if (list[k].id == formData.id) {
+            list[k] = formData;
+            hv = true;
+          }
+        }
+        if (!hv) {
+          list.unshift(formData);
         }
       }
     }
@@ -234,52 +272,61 @@ export class App {
 
   // 音频播放。。。
   play() {
-    var myaudio = document.getElementById("myaudio");
-    console.log(myaudio);
+    const myaudio = document.getElementById("myaudio");
     myaudio.play();
     document.getElementById("play").style.display = "none";
     document.getElementById("stop").style.display = "inline-block";
   }
   closePlay() {
-    var myaudio = document.getElementById("myaudio");
-    console.log(myaudio);
+    const myaudio = document.getElementById("myaudio");
     myaudio.pause();
     document.getElementById("stop").style.display = "none";
     document.getElementById("play").style.display = "inline-block";
   }
-  menus(id, type) {
-    var acac = this;
+
+  onRightMenus(id, type) {
+    const acac = this;
     event.preventDefault();
-    var oM = document.getElementById("menus");
-    var oEvt = event;
+    const oM = document.getElementById("menus");
+    const oEvt = event;
     oM.style.display = "block";
     oM.style.left = oEvt.clientX + "px";
     oM.style.top = oEvt.clientY + "px";
-    document.getElementById("sc").onclick = function () {
-      oM.style.display = "none";
-      acac.cancel(id, type);
-    };
+
+    const m = document.getElementById("menusDelete");
+    m.setAttribute("data-id", id);
+    m.setAttribute("data-type", type);
   }
-  cancel(id, type) {
-    const data = this.data.get();
-    var list = data[type];
-    list.forEach((v, i) => {
-      if (v.id === id) {
-        list.splice(i, 1);
+
+  onMenusDelete(e) {
+    // console.log(type, id);
+    e = e || window.event;
+
+    const id = e.target.getAttribute("data-id");
+    const type = e.target.getAttribute("data-type");
+
+    const oM = document.getElementById("menus");
+    oM.style.display = "none";
+
+    this.editListItem(type, { id: id }, false, true);
+    if (type == "progressList" || type == "doneList") {
+      const selectTrackerItem = this.data.get("selectTrackerItem", null);
+      if (selectTrackerItem && selectTrackerItem.id == id) {
+        this.cancelSelectTracker();
       }
-    });
-    data[type] = list;
-    this.data.set(data);
-    kvdb.set(type, list);
+    }
+
+    this.viewRender();
   }
-  acac() {
+
+  hideRightMenuLayer() {
     document.getElementById("menus").style.display = "none";
   }
 
   change(type, listName, id) {
     const data = this.data.get();
-    var list = data[listName];
-    var items = null;
+    const list = data[listName];
+    const items = null;
     list.forEach((v, i) => {
       if (v.id === id) {
         items = v;
@@ -305,19 +352,20 @@ export class App {
     this.cancelSelectTracker();
   }
 
-  addFlowTImeTracker() {
-    var name = document.getElementById("timeTrackerName").value;
+  saveAddFlowTimeTracker() {
+    const el = document.getElementById("timeTrackerName");
+    const name = el ? el.value : "";
     if (!name || name.length <= 2) {
       alert("Please input valid name (length > 2)");
       return;
     }
 
-    var data = new FlowTimeTracker();
+    const data = new FlowTimeTracker();
     data.id = randId();
     data.name = name;
     data.start = getUnixSeconds();
 
-    var item = new FlowTimeTrackerItem();
+    const item = new FlowTimeTrackerItem();
     item.start = data.start;
     data.trackers.push(item);
 
@@ -332,13 +380,13 @@ export class App {
     }
     const data = this.data.get();
     for (var i = 0; i < data.progressList.length; i++) {
-      var item = data.progressList[i];
+      const item = data.progressList[i];
       if (item.id == id) {
         return item;
       }
     }
     for (var i = 0; i < data.doneList.length; i++) {
-      var item = data.progressList[i];
+      const item = data.progressList[i];
       if (item.id == id) {
         return item;
       }
@@ -347,7 +395,7 @@ export class App {
   }
 
   editTrackerItem(id) {
-    var selectItem = this.findOneTrackerItem(id);
+    const selectItem = this.findOneTrackerItem(id);
     if (!selectItem) {
       return;
     }
@@ -359,35 +407,42 @@ export class App {
     this.updateSelectTrackerStatus();
   }
 
-  updateSelectTrackerStatus() {
+  getSelectTrackerLast() {
     const tracker = this.data.get("selectTrackerItem", null);
     if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
       if (this.trackerTimer) {
         clearTimeout(this.trackerTimer);
       }
+      return null;
+    }
+    return tracker.trackers[tracker.trackers.length - 1];
+  }
+
+  updateSelectTrackerStatus() {
+    const lastItem = this.getSelectTrackerLast();
+    if (!lastItem) {
       return;
     }
-    var lastItem = tracker.trackers[tracker.trackers.length - 1];
-    var reset = typeof lastItem.reset != "undefined" ? lastItem.reset : 0;
-    if (reset > 0) {
-      this.updateTrackerIme(reset, lastItem.end);
+    const rest = typeof lastItem.rest != "undefined" ? lastItem.rest : 0;
+    if (rest > 0) {
+      this.doUpdateTrackerIme(rest, lastItem.end);
     } else {
-      this.updateTrackerIme(lastItem.start, reset);
+      this.doUpdateTrackerIme(lastItem.start, rest);
     }
   }
 
-  updateTrackerIme(start, end) {
+  doUpdateTrackerIme(start, end) {
     var over = end;
     if (end < 1) {
       over = getUnixSeconds();
     }
-    var s = over - start;
+    const s = over - start;
     document.getElementById("trackerTimer").innerHTML = formatTime(s);
     if (this.trackerTimer) {
       clearTimeout(this.trackerTimer);
     }
     this.trackerTimer = setTimeout(() => {
-      this.updateTrackerIme(start, end);
+      this.doUpdateTrackerIme(start, end);
     }, 300);
   }
 
@@ -397,5 +452,210 @@ export class App {
     });
     kvdb.del("selectTrackerItem");
     this.updateSelectTrackerStatus();
+  }
+
+  editFlowTimeTracker(type) {
+    const tracker = this.data.get("selectTrackerItem", null);
+    if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
+      if (this.trackerTimer) {
+        clearTimeout(this.trackerTimer);
+      }
+      return null;
+    }
+    const lastItem = tracker.trackers[tracker.trackers.length - 1];
+
+    const rest = lastItem.rest ? lastItem.rest : 0;
+    if (rest > 0) {
+      if (type == "rest") {
+        return;
+      } else if (type == "work") {
+        lastItem.end = getUnixSeconds();
+
+        const item = new FlowTimeTrackerItem();
+        item.start = lastItem.end;
+        tracker.trackers.push(item);
+      } else if (type == "break") {
+        lastItem.end = getUnixSeconds();
+        lastItem.break = true;
+
+        const item = new FlowTimeTrackerItem();
+        item.start = lastItem.end;
+        tracker.trackers.push(item);
+      }
+    } else {
+      if (type == "rest") {
+        lastItem.rest = getUnixSeconds();
+      } else if (type == "work") {
+        return;
+      } else if (type == "break") {
+        lastItem.rest = getUnixSeconds();
+        lastItem.end = lastItem.rest;
+        lastItem.break = true;
+
+        const item = new FlowTimeTrackerItem();
+        item.start = lastItem.end;
+        tracker.trackers.push(item);
+      }
+    }
+
+    kvdb.set("selectTrackerItem", tracker);
+    this.data.onlySet({
+      selectTrackerItem: tracker,
+    });
+    this.editListItem("progressList", tracker, false);
+    this.viewRender();
+
+    this.updateSelectTrackerStatus();
+  }
+
+  setFlowTrackerDone(id) {
+    const tracker = this.findOneTrackerItem(id);
+    if (!tracker) {
+      return;
+    }
+
+    tracker.end = getUnixSeconds();
+    for (var i = 0; i < tracker.trackers.length; i++) {
+      const item = tracker.trackers[i];
+      if (item.end > 0) {
+        if (item.rest < 1) {
+          item.rest = item.end;
+        }
+      } else {
+        item.end = tracker.end;
+        if (item.rest < 1) {
+          item.rest = item.end;
+        }
+      }
+      console.log("++++++++++++++++++", tracker);
+
+      this.editListItem("progressList", tracker, false, true);
+      this.editListItem("doneList", tracker, true);
+
+      const selectTrackerItem = this.data.get("selectTrackerItem", null);
+      if (selectTrackerItem && selectTrackerItem.id == tracker.id) {
+        this.cancelSelectTracker();
+      } else {
+        this.viewRender();
+      }
+    }
+  }
+
+  /***************************************************** */
+  /******************* Drage layer ********************* */
+  /***************************************************** */
+
+  dragDown(e, el, id) {
+    e = e || window.event;
+
+    _dragMaster = this;
+    if (!_isBindEvent) {
+      document.body.addEventListener("mousemove", sysDragMove);
+      document.body.addEventListener("mouseup", sysDragUp);
+      _isBindEvent = true;
+    }
+
+    // this.dEle = el;
+    const w = el.width;
+    const h = el.height;
+
+    //const mm = new HTMLAnchorElement();
+    //mm.classList.add(draging)
+
+    const cel = el.cloneNode(true);
+    cel.classList.add("draging");
+    cel.style.opacity = "0.6";
+    cel.style.position = "fixed";
+    cel.style.left = e.clientX - e.layerX + "px";
+    cel.style.top = e.clientY - e.layerY + "px";
+    cel.style.width = el.width + "px";
+    cel.style.height = el.height + "px";
+    cel.style.zIndex = "100";
+    cel.setAttribute("data-layer-x", e.layerX);
+    cel.setAttribute("data-layer-y", e.layerY);
+    cel.setAttribute("data-id", id);
+    this.dEle = cel;
+
+    document.body.appendChild(this.dEle);
+  }
+  dragMove(e) {
+    window.getSelection
+      ? window.getSelection().removeAllRanges()
+      : document.selection.empty();
+
+    e = e || window.event;
+
+    const aimBox = document.getElementById("doneListArae");
+    const inArea = this.dragInArea(e, aimBox);
+    if (inArea) {
+      aimBox.classList.add("drag-status-in");
+    }
+
+    if (this.dEle) {
+      const lx = this.dEle.getAttribute("data-layer-x");
+      const ly = this.dEle.getAttribute("data-layer-y");
+      this.dEle.style.left = e.clientX - lx + "px";
+      this.dEle.style.top = e.clientY - ly + "px";
+    }
+  }
+
+  dragUp(e) {
+    window.getSelection
+      ? window.getSelection().removeAllRanges()
+      : document.selection.empty();
+
+    const aimBox = document.getElementById("doneListArae");
+    const inArea = this.dragInArea(e, aimBox);
+    aimBox.classList.remove("drag-status-in");
+    console.log("dragUp", inArea);
+
+    document.body.removeEventListener("mousemove", sysDragMove);
+    document.body.removeEventListener("mouseup", sysDragUp);
+    _isBindEvent = false;
+    _dragMaster = null;
+
+    if (this.dEle) {
+      const id = this.dEle.getAttribute("data-id");
+      document.body.removeChild(this.dEle);
+      this.dEle = null;
+
+      if (inArea) {
+        this.setFlowTrackerDone(id);
+      }
+    }
+  }
+
+  dragInArea(e, aimBox) {
+    if (!e || !aimBox) {
+      return;
+    }
+    dEle;
+    const ex = e.clientX;
+    const ey = e.clientY;
+    if (
+      ex >= aimBox.offsetLeft &&
+      ex <= aimBox.offsetLeft + aimBox.offsetWidth &&
+      ey >= aimBox.offsetTop &&
+      ey <= aimBox.offsetTop + aimBox.offsetHeight
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Audio player progress
+  updateProgress(ap) {
+    const el = document.getElementById("audioCur");
+    const tmel1 = document.getElementById("audioCurTime");
+    const tmel2 = document.getElementById("audioTotalTime");
+
+    const pos = ap.currentTime / ap.duration;
+    const p = parseInt(Math.round(pos * 1000.0) / 10.0) % 100;
+    el.style.display = "inline-block";
+    el.style.width = p + "%";
+
+    tmel1.innerHTML = formatTime2(ap.currentTime);
+    tmel2.innerHTML = formatTime2(ap.duration);
   }
 }

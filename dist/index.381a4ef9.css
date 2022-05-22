@@ -126,6 +126,20 @@
   font-weight: bold;
 }
 
+#app .content__two__box {
+  border: 2px dashed #0000;
+}
+
+#app .content__two__box:hover {
+  background-color: #e2e2e2;
+  border-color: orange;
+}
+
+#app .lone .cur {
+  width: 0%;
+  display: inline-block;
+}
+
 .view-footer span {
   font-size: 64px !important;
 }
@@ -994,6 +1008,14 @@ button {
 button.outline {
   color: gray;
   background-color: #fff;
+}
+
+.draging {
+  background-color: #f009;
+}
+
+.drag-status-in {
+  background-color: #0000ff4d;
 }
 
 .order-0 {

@@ -1,4 +1,4 @@
-<div class="box" onclick="this.acac()">
+<div class="box" onclick="this.hideRightMenuLayer()">
   <!-- Left Bar -->
   <div class="left">
     <div class="left__Favicon">
@@ -67,12 +67,13 @@
           placeholder="Please inpout tracker name"
         />
         {@else} {@if !!selectTrackerItem}
-        <span>${selectTrackerItem}</span>
+        <span>${selectTrackerItem.name}</span>
         {@else}
         <span>What are you working on?</span> {@/if} {@/if}
       </div>
       <!-- <div id="Tracker" style="display: none;" class="right__header__title">Write down what are you going there.</div> -->
       <div id="trackerTimer" class="right__header__date">00:00:00</div>
+      {@if !selectTrackerItem}
       <div class="right__header__button">
         <img
           class="right__header__button-img"
@@ -84,7 +85,7 @@
           class="right__header__button-img selected"
           src="assets/images/Worktime.png"
           alt=""
-          onclick="this.addFlowTImeTracker()"
+          onclick="this.saveAddFlowTimeTracker()"
         />
         {@else}
         <img
@@ -99,6 +100,28 @@
           alt=""
         />
       </div>
+      {@else}
+      <div class="right__header__button">
+        <img
+          class="right__header__button-img"
+          src="assets/images/InterrupSmall.png"
+          alt=""
+          onclick="this.editFlowTimeTracker('break')"
+        />
+        <img
+          class="right__header__button-img selected"
+          src="assets/images/Worktime.png"
+          alt=""
+          onclick="this.editFlowTimeTracker('work')"
+        />
+        <img
+          class="right__header__button-img"
+          src="assets/images/BreaktimeSmall.png"
+          alt=""
+          onclick="this.editFlowTimeTracker('rest')"
+        />
+      </div>
+      {@/if}
     </div>
 
     <div class="content">
@@ -120,7 +143,7 @@
           {@each readList as item}
           <div
             ondblclick="this.change('form2','readList','${item.id}')"
-            oncontextmenu="this.menus('${item.id}','readList')"
+            oncontextmenu="this.onRightMenus('${item.id}','readList')"
             class="content__Reading__c"
           >
             <div class="content__Reading__c__h">
@@ -154,7 +177,7 @@
           {@each taskList as item}
           <div
             ondblclick="this.change('form1','taskList','${item.id}')"
-            oncontextmenu="this.menus('${item.id}','taskList')"
+            oncontextmenu="this.onRightMenus('${item.id}','taskList')"
             class="content__toDo__box"
           >
             <div class="content__toDo__box__one">
@@ -185,7 +208,12 @@
         </div>
         <div class="content__twos__box">
           {@each progressList as item}
-          <div class="content__two__box">
+          <div
+            id="card${item.id}"
+            class="content__two__box"
+            onmousedown="this.dragDown(event, this, '${item.id}')"
+            oncontextmenu="this.onRightMenus('${item.id}','progressList')"
+          >
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
             <img
               class="content__two__box__stop"
@@ -234,7 +262,7 @@
                 </div>
                 <div class="content__two__boxs-items">
                   <img src="assets/images/BreaktimeSmall.png" alt="" />
-                  ${tracker|flowItemResetTime}
+                  ${tracker|flowItemRestTime}
                 </div>
                 <div class="content__two__boxs-items">
                   <img src="assets/images/InterrupSmall.png" alt="" />
@@ -251,13 +279,16 @@
       </div>
 
       <!-- Done-->
-      <div class="content__two content__three">
+      <div id="doneListArae" class="content__two content__three">
         <div class="content__three__h">
           <div class="content__three__h__text">Done</div>
         </div>
         <div class="content__twos__box">
           {@each doneList as item}
-          <div class="content__two__box">
+          <div
+            class="content__two__box"
+            oncontextmenu="this.onRightMenus('${item.id}','doneList')"
+          >
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
             <img
               class="content__two__box__stop"
@@ -306,7 +337,7 @@
                 </div>
                 <div class="content__two__boxs-items">
                   <img src="assets/images/BreaktimeSmall.png" alt="" />
-                  ${tracker|flowItemResetTime}
+                  ${tracker|flowItemRestTime}
                 </div>
                 <div class="content__two__boxs-items">
                   <img src="assets/images/InterrupSmall.png" alt="" />
@@ -361,6 +392,8 @@
       <div style="display: none">
         <audio
           id="myaudio"
+          controls=""
+          ontimeupdate="this.updateProgress(this)"
           src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"
         ></audio>
       </div>
@@ -389,11 +422,11 @@
             <img src="assets/images/Next.png" alt="" />
           </div>
           <div class="footer__display__center__progressbar">
-            <span>3:18</span>
+            <span id="audioCurTime">00:00</span>
             <span class="lone">
-              <span></span>
+              <span class="cur" id="audioCur"></span>
             </span>
-            <span>4:09</span>
+            <span id="audioTotalTime">00:09</span>
           </div>
         </div>
         <div class="footer__display__right">
@@ -490,5 +523,5 @@
   </div>
 </div>
 <ul id="menus">
-  <li id="sc">删除</li>
+  <li id="menusDelete" onclick="this.onMenusDelete(event)">删除</li>
 </ul>

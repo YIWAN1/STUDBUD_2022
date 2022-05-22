@@ -8,7 +8,7 @@ import {
   flowDucation,
   flowDueDate,
   flowEstTime,
-  flowItemResetTime,
+  flowItemRestTime,
   flowItemWorkTime,
 } from "./js/flowTime.js";
 
@@ -27,7 +27,7 @@ import {
   juicer.register("flowDueDate", flowDueDate);
   juicer.register("flowEstTime", flowEstTime);
   juicer.register("flowDucation", flowDucation);
-  juicer.register("flowItemResetTime", flowItemResetTime);
+  juicer.register("flowItemRestTime", flowItemRestTime);
   juicer.register("flowItemWorkTime", flowItemWorkTime);
 
   kvdb.init();

@@ -13,36 +13,37 @@ export const flowEstTime = (v) => {
   return secondToHMS(ducation);
 };
 
-export const flowItemResetTime = (v) => {
+export const flowItemRestTime = (v) => {
   if (!v) {
     return "-";
   }
-  var reset = v.reset ? v.reset : 0;
-  if (reset < 1) {
-    reset = getUnixSeconds();
+  var now = getUnixSeconds();
+  var rest = v.rest ? v.rest : 0;
+  if (rest < 1) {
+    rest = now;
   }
 
   var end = v.end;
   if (end < 1) {
-    end = reset;
+    end = now;
   }
 
-  var ducation = end - v.reset;
+  var ducation = end - v.rest;
   return secondToHMS(ducation);
 };
 
 export const flowItemWorkTime = (v) => {
-    if (!v || !v.start) {
-      return "-";
-    }
-    var rest = v.rest ? v.rest : 0;
-    if (rest < 1) {
-      rest = getUnixSeconds();
-    }
-  
-    var ducation = rest - v.start;
-    return secondToHMS(ducation);
-  };
+  if (!v || !v.start) {
+    return "-";
+  }
+  var rest = v.rest ? v.rest : 0;
+  if (rest < 1) {
+    rest = getUnixSeconds();
+  }
+
+  var ducation = rest - v.start;
+  return secondToHMS(ducation);
+};
 
 export const flowDueDate = (v) => {
   if (!v) {
