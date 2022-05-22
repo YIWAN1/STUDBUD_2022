@@ -4,8 +4,9 @@ import juicer from "juicer";
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
-import { formatTime, randId } from "../js/utils";
+import { formatTime, getUnixSeconds, randId } from "../js/utils";
 import { is } from "express/lib/request";
+import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
 
 export class App {
@@ -32,7 +33,10 @@ export class App {
   init() {
     this.data.init({
       readList: [],
+      progressList: [],
+      doneList: [],
       taskList: [],
+      editTimeTracker: false,
       form1: {
         id: "",
         name: "",
@@ -55,10 +59,14 @@ export class App {
   async getData() {
     const taskList = await kvdb.get("taskList", []);
     const readList = await kvdb.get("readList", []);
+    const progressList = await kvdb.get("progressList", []);
+    const doneList = await kvdb.get("doneList", []);
 
     const data = this.data.get();
     data["taskList"] = taskList ? taskList : [];
     data["readList"] = taskList ? readList : [];
+    data["progressList"] = taskList ? progressList : [];
+    data["doneList"] = taskList ? doneList : [];
 
     this.data.set(data);
   }
@@ -126,9 +134,9 @@ export class App {
     this.hideFloatLayer();
 
     if (formName == "form1") {
-      this.editTask(formData, isAdd);
+      this.editListItem("taskList", formData, isAdd);
     } else if (formName == "form2") {
-      this.editReading(formData, isAdd);
+      this.editListItem("", formData, isAdd);
     }
 
     this.data.onlyReset("form1");
@@ -136,14 +144,14 @@ export class App {
     this.viewRender();
   }
 
-  // add task
-  editTask(formData, isAdd) {
+  // save item data to list
+  editListItem(listName, formData, isAdd) {
     if (!formData) {
       return;
     }
 
     const data = this.data.get();
-    const list = data["taskList"];
+    const list = data[listName];
     if (!list) {
       list = [];
     }
@@ -162,40 +170,10 @@ export class App {
       }
     }
 
-    data["taskList"] = list;
+    data[listName] = list;
 
     this.data.onlySet(data);
-    kvdb.set("taskList", list);
-  }
-
-  // add reading
-  editReading(formData, isAdd) {
-    if (!formData) {
-      return;
-    }
-
-    const data = this.data.get();
-    const list = data["readList"];
-    if (!list) {
-      list = [];
-    }
-
-    if (isAdd) {
-      list.unshift(formData);
-      if (list.length > 4) {
-        list.pop();
-      }
-    } else {
-      for (var k in list) {
-        if (list[k].id == formData.id) {
-          list[k] = formData;
-        }
-      }
-    }
-    data["readList"] = list;
-
-    this.data.onlySet(data);
-    kvdb.set("readList", list);
+    kvdb.set(listName, list);
   }
 
   startTimer() {
@@ -306,8 +284,35 @@ export class App {
     this.data.onlySet(data);
     this.viewRender();
 
-    console.log(type, items)
-    console.log(this.data.get())
-    this.onOpenAddForm(type)
+    console.log(type, items);
+    console.log(this.data.get());
+    this.onOpenAddForm(type);
+  }
+
+  addFlowTimeTracker() {
+    this.data.set({
+      editTimeTracker: true,
+    });
+  }
+
+  addFlowTImeTracker() {
+    var name = document.getElementById("timeTrackerName").value;
+    if (!name || name.length <= 2) {
+      alert("Please input valid name (length > 2)");
+      return;
+    }
+
+    var data = new FlowTimeTracker();
+    data.id = randId();
+    data.name = name;
+    data.start = getUnixSeconds();
+
+    var item = new FlowTimeTrackerItem();
+    item.start = data.start;
+    data.trackers.push(item);
+
+    console.log(data);
+    this.editListItem("progressList", data, true);
+    this.viewRender();
   }
 }

@@ -22,14 +22,14 @@
 }
 
 #app .left .menu-item .menu-box {
-  width: 200rem;
+  width: 300rem;
   z-index: 100;
   background-color: #fff;
   border-radius: 8rem;
   padding: 8rem 10rem;
   position: absolute;
   top: 6rem;
-  right: -190rem;
+  right: -290rem;
   box-shadow: 1px 3px 10px #0006;
 }
 
@@ -112,6 +112,20 @@
   padding: 0 8rem;
 }
 
+#app .right__header__title input.flow-time-name {
+  width: 92%;
+  background-color: #f2f2f2;
+  border-radius: 12rem;
+  padding: 8rem 16rem;
+  font-size: 36rem;
+  border: 0 solid #0000 !important;
+}
+
+#app .content__two__boxs-item__value {
+  margin-right: 16rem;
+  font-weight: bold;
+}
+
 .view-footer span {
   font-size: 64px !important;
 }
@@ -125,6 +139,10 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+input {
+  font-family: Inter;
 }
 
 .box {
@@ -172,13 +190,16 @@ body {
 }
 
 .left__user {
+  width: 100%;
   position: absolute;
-  bottom: 27rem;
+  bottom: 40rem;
 }
 
 .left__user img {
   width: 48rem;
   height: 48rem;
+  margin: 0 auto;
+  display: block;
 }
 
 .right {
@@ -224,20 +245,14 @@ body {
   display: flex;
 }
 
-.right__header__button-InterrupSmall {
-  width: 45rem;
-  height: 45rem;
-}
-
-.right__header__button-Worktime {
+.right__header__button-img:hover, .right__header__button-img.selected {
   width: 70rem;
-  height: 70rem;
-  margin: 0 11rem;
 }
 
-.right__header__button-BreaktimeSmall {
+.right__header__button-img {
   width: 45rem;
-  height: 45rem;
+  margin: 0 11rem;
+  display: inline-block;
 }
 
 .content {

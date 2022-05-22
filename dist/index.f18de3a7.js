@@ -533,6 +533,7 @@ var _kvdbJs = require("./js/kvdb.js");
 var _juicer = require("juicer");
 var _juicerDefault = parcelHelpers.interopDefault(_juicer);
 var _mainScss = require("./main.scss");
+var _flowTimeJs = require("./js/flowTime.js");
 (function() {
     _juicerDefault.default.set({
         "tag::operationOpen": "{@",
@@ -544,6 +545,11 @@ var _mainScss = require("./main.scss");
         "tag::commentOpen": "{#",
         "tag::commentClose": "}"
     });
+    _juicerDefault.default.register("flowDueDate", _flowTimeJs.flowDueDate);
+    _juicerDefault.default.register("flowEstTime", _flowTimeJs.flowEstTime);
+    _juicerDefault.default.register("flowDucation", _flowTimeJs.flowDucation);
+    _juicerDefault.default.register("flowItemResetTime", _flowTimeJs.flowItemResetTime);
+    _juicerDefault.default.register("flowItemWorkTime", _flowTimeJs.flowItemWorkTime);
     _kvdbJs.kvdb.init();
     _bindJs.observeInit();
     const app = new _appJs.App("app");
@@ -551,7 +557,7 @@ var _mainScss = require("./main.scss");
     app.viewRender();
 })();
 
-},{"./app/app.js":"lBGMq","./js/bind.js":"e0Agw","./js/kvdb.js":"815IK","juicer":"lkMaW","./main.scss":"aNzNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lBGMq":[function(require,module,exports) {
+},{"./app/app.js":"lBGMq","./js/bind.js":"e0Agw","./js/kvdb.js":"815IK","juicer":"lkMaW","./main.scss":"aNzNG","./js/flowTime.js":"79PXr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lBGMq":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "App", ()=>App
@@ -564,6 +570,7 @@ var _footer = require("./views/footer/footer");
 var _kvdb = require("../js/kvdb");
 var _utils = require("../js/utils");
 var _request = require("express/lib/request");
+var _define = require("../js/define");
 const compiledTpl = _juicerDefault.default(require("./app.shtml"));
 class App {
     //
@@ -585,7 +592,10 @@ class App {
     init() {
         this.data.init({
             readList: [],
+            progressList: [],
+            doneList: [],
             taskList: [],
+            editTimeTracker: false,
             form1: {
                 id: "",
                 name: "",
@@ -606,9 +616,13 @@ class App {
     async getData() {
         const taskList = await _kvdb.kvdb.get("taskList", []);
         const readList = await _kvdb.kvdb.get("readList", []);
+        const progressList = await _kvdb.kvdb.get("progressList", []);
+        const doneList = await _kvdb.kvdb.get("doneList", []);
         const data = this.data.get();
         data["taskList"] = taskList ? taskList : [];
         data["readList"] = taskList ? readList : [];
+        data["progressList"] = taskList ? progressList : [];
+        data["doneList"] = taskList ? doneList : [];
         this.data.set(data);
     }
     viewRender() {
@@ -657,17 +671,17 @@ class App {
         }
         console.log("formData", formData);
         this.hideFloatLayer();
-        if (formName == "form1") this.editTask(formData, isAdd);
-        else if (formName == "form2") this.editReading(formData, isAdd);
+        if (formName == "form1") this.editListItem("taskList", formData, isAdd);
+        else if (formName == "form2") this.editListItem("", formData, isAdd);
         this.data.onlyReset("form1");
         this.data.onlyReset("form2");
         this.viewRender();
     }
-    // add task
-    editTask(formData, isAdd) {
+    // save item data to list
+    editListItem(listName, formData, isAdd) {
         if (!formData) return;
         const data = this.data.get();
-        const list = data["taskList"];
+        const list = data[listName];
         if (!list) list = [];
         if (isAdd) {
             list.unshift(formData);
@@ -675,25 +689,9 @@ class App {
         } else {
             for(var k in list)if (list[k].id == formData.id) list[k] = formData;
         }
-        data["taskList"] = list;
+        data[listName] = list;
         this.data.onlySet(data);
-        _kvdb.kvdb.set("taskList", list);
-    }
-    // add reading
-    editReading(formData, isAdd) {
-        if (!formData) return;
-        const data = this.data.get();
-        const list = data["readList"];
-        if (!list) list = [];
-        if (isAdd) {
-            list.unshift(formData);
-            if (list.length > 4) list.pop();
-        } else {
-            for(var k in list)if (list[k].id == formData.id) list[k] = formData;
-        }
-        data["readList"] = list;
-        this.data.onlySet(data);
-        _kvdb.kvdb.set("readList", list);
+        _kvdb.kvdb.set(listName, list);
     }
     startTimer() {
         this.timeCount = 0;
@@ -783,9 +781,31 @@ class App {
         console.log(this.data.get());
         this.onOpenAddForm(type);
     }
+    addFlowTimeTracker() {
+        this.data.set({
+            editTimeTracker: true
+        });
+    }
+    addFlowTImeTracker() {
+        var name = document.getElementById("timeTrackerName").value;
+        if (!name || name.length <= 2) {
+            alert("Please input valid name (length > 2)");
+            return;
+        }
+        var data = new _define.FlowTimeTracker();
+        data.id = _utils.randId();
+        data.name = name;
+        data.start = _utils.getUnixSeconds();
+        var item = new _define.FlowTimeTrackerItem();
+        item.start = data.start;
+        data.trackers.push(item);
+        console.log(data);
+        this.editListItem("progressList", data, true);
+        this.viewRender();
+    }
 }
 
-},{"../js/bind":"e0Agw","juicer":"lkMaW","./app.scss":"kO0m1","./views/footer/footer":"gue9o","../js/kvdb":"815IK","../js/utils":"e8TO1","express/lib/request":"3VXU8","./app.shtml":"h1n6Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e0Agw":[function(require,module,exports) {
+},{"../js/bind":"e0Agw","juicer":"lkMaW","./app.scss":"kO0m1","./views/footer/footer":"gue9o","../js/kvdb":"815IK","../js/utils":"e8TO1","express/lib/request":"3VXU8","../js/define":"g467j","./app.shtml":"h1n6Q","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e0Agw":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "BindObject", ()=>BindObject
@@ -3679,6 +3699,12 @@ parcelHelpers.export(exports, "formatTime", ()=>formatTime
 );
 parcelHelpers.export(exports, "randId", ()=>randId
 );
+parcelHelpers.export(exports, "getUnixSeconds", ()=>getUnixSeconds
+);
+parcelHelpers.export(exports, "secondToHMS", ()=>secondToHMS
+);
+parcelHelpers.export(exports, "formatDate", ()=>formatDate
+);
 const formatTime = (c)=>{
     const d = c % 86400;
     const h = Math.floor(d / 3600);
@@ -3687,8 +3713,52 @@ const formatTime = (c)=>{
     return "" + (h > 9 ? h : "0" + h) + ":" + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s);
 };
 const randId = ()=>{
-    const c = 'ID' + Math.random();
-    return c.replace(/[^0-1a-zA-Z]+/ig, '');
+    const c = "ID" + Math.random();
+    return c.replace(/[^0-1a-zA-Z]+/gi, "");
+};
+const getUnixSeconds = ()=>{
+    return Math.round(new Date().getTime() / 1000);
+};
+const secondToHMS = (v)=>{
+    if (!v) return "0s";
+    var res = "";
+    var h = Math.floor(v / 3600);
+    if (h > 0) res += h + "h";
+    var m = Math.floor(v % 3600 / 60);
+    if (m > 0) {
+        res += m + "m";
+        return res;
+    }
+    var s = v % 60;
+    if (s > 0) res += s + "s";
+    return res;
+};
+function newDate(v) {
+    // return;
+    if (v instanceof Date) return v;
+    if (!v) return new Date();
+    v = "" + v;
+    v = v.replace(/\.[0-9]+/g, "");
+    v = v.replace(/-/g, "/");
+    return new Date(Date.parse(v));
+}
+const formatDate = (date, fmt)=>{
+    // author: meizz
+    if (!date) return "";
+    if (!fmt) return "" + date;
+    if (typeof date !== "object") date = newDate(date);
+    const o = {
+        "M+": date.getMonth() + 1,
+        "d+": date.getDate(),
+        "h+": date.getHours(),
+        "m+": date.getMinutes(),
+        "s+": date.getSeconds(),
+        "q+": Math.floor((date.getMonth() + 3) / 3),
+        S: date.getMilliseconds()
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (const k of Object.keys(o))if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+    return fmt;
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3VXU8":[function(require,module,exports) {
@@ -6072,8 +6142,8 @@ http.METHODS = [
 ];
 
 },{"./lib/request":"csW06","./lib/response":"47huq","xtend":"93zjj","builtin-status-codes":"iqSVp","url":"7qjc7"}],"csW06":[function(require,module,exports) {
-var process = require("process");
 var Buffer = require("buffer").Buffer;
+var process = require("process");
 var global = arguments[3];
 var capability = require('./capability');
 var inherits = require('inherits');
@@ -6340,7 +6410,7 @@ var unsafeHeaders = [
     'via'
 ];
 
-},{"process":"d5jf4","buffer":"fCgem","./capability":"jih7t","inherits":"bRL3M","./response":"47huq","readable-stream":"jXNWE"}],"fCgem":[function(require,module,exports) {
+},{"buffer":"fCgem","process":"d5jf4","./capability":"jih7t","inherits":"bRL3M","./response":"47huq","readable-stream":"jXNWE"}],"fCgem":[function(require,module,exports) {
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -8220,8 +8290,8 @@ exports.pipeline = require('./lib/internal/streams/pipeline.js');
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 'use strict';
-var global = arguments[3];
 var process = require("process");
+var global = arguments[3];
 module.exports = Readable;
 /*<replacement>*/ var Duplex;
 /*</replacement>*/ Readable.ReadableState = ReadableState;
@@ -13893,9 +13963,81 @@ var parseip = ipaddr.parse;
     };
 }).call(this);
 
-},{}],"h1n6Q":[function(require,module,exports) {
-module.exports = "<div class=\"box\" onclick=\"this.acac()\">\r\n  <!-- Left Bar -->\r\n  <div class=\"left\">\r\n    <div class=\"left__Favicon\">\r\n      <img src=\"assets/images/Favicon.png\" alt=\"\" />\r\n    </div>\r\n    <div class=\"left__box\">\r\n      <div\r\n        class=\"menu-item\"\r\n        onmouseover=\"this.showMenu('menuAdd')\"\r\n        onmouseleave=\"this.hideMenu()\"\r\n      >\r\n        <div class=\"menu-tag left__box-item Quickadd\">\r\n          <img src=\"assets/images/Quickadd.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuAdd\" class=\"menu-box menu-add\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Add</div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form1')\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon reorder\"></i>Task</span\r\n            >\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form2')\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon chrome_reader_mode\"></i>Reading</span\r\n            >\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div\r\n        class=\"menu-item\"\r\n        onmouseover=\"this.showMenu('menuTimer')\"\r\n        onmouseleave=\"this.hideMenu()\"\r\n      >\r\n        <div class=\"menu-tag left__box-item Quicktimer\">\r\n          <img src=\"assets/images/Quicktimer.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuTimer\" class=\"menu-box menu-timer\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Timer</div>\r\n          <div class=\"li li-item\" onclick=\"this.startTimer()\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon timer\"></i>Stopwatch Timer</span\r\n            >\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.stopTimer(true)\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon timelapse\"></i>Flow Time Tracker</span\r\n            >\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"left__user\">\r\n      <img src=\"assets/images/user.png\" alt=\"\" />\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"right\">\r\n    <!-- Top Flow Time Tracker -->\r\n    <div class=\"right__header\">\r\n      <div id=\"right__header__title\" class=\"right__header__title\">\r\n        What are you working on?\r\n      </div>\r\n      <!-- <div id=\"Tracker\" style=\"display: none;\" class=\"right__header__title\">Write down what are you going there.</div> -->\r\n      <div class=\"right__header__date\">00:22:33</div>\r\n      <div class=\"right__header__button\">\r\n        <img\r\n          class=\"right__header__button-InterrupSmall\"\r\n          src=\"assets/images/InterrupSmall.png\"\r\n          alt=\"\"\r\n        />\r\n        <img\r\n          class=\"right__header__button-Worktime\"\r\n          src=\"assets/images/Worktime.png\"\r\n          alt=\"\"\r\n        />\r\n        <img\r\n          class=\"right__header__button-BreaktimeSmall\"\r\n          src=\"assets/images/BreaktimeSmall.png\"\r\n          alt=\"\"\r\n        />\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"content\">\r\n      <div class=\"content__one\">\r\n        <!-- Reading——Reading List Creator -->\r\n        <div class=\"content__Reading\">\r\n          <div class=\"content__Reading__h\">\r\n            <div class=\"content__Reading__h__text\">Reading</div>\r\n            <img\r\n              src=\"assets/images/Add.png\"\r\n              onclick=\"this.onOpenAddForm('form2')\"\r\n              class=\"content__Reading__h__Add\"\r\n            />\r\n            <img\r\n              src=\"assets/images/Openlink.png\"\r\n              class=\"content__Reading__h__Openlink\"\r\n            />\r\n          </div>\r\n          {@each readList as item}\r\n          <div ondblclick=\"this.change('form2','readList','${item.id}')\" oncontextmenu=\"this.menus('${item.id}','readList')\" class=\"content__Reading__c\">\r\n            <div class=\"content__Reading__c__h\">\r\n              <div class=\"content__Reading__c__h__text\">Group Name</div>\r\n              <img\r\n                src=\"assets/images/Add.png\"\r\n                class=\"content__Reading__c__h__Add\"\r\n              />\r\n              <img\r\n                src=\"assets/images/Openlink.png\"\r\n                class=\"content__Reading__c__h__Openlink\"\r\n              />\r\n            </div>\r\n            <div class=\"content__Reading__c__box\">${item.name}</div>\r\n            <div class=\"content__Reading__c__box\">${item.readLink}</div>\r\n            <div class=\"content__Reading__c__box\">${item.projectName}</div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n\r\n        <!-- To Do——Task List  -->\r\n        <div class=\"content__toDo\">\r\n          <div class=\"content__toDo__h\">\r\n            <div class=\"content__toDo__h__text\">To Do</div>\r\n            <img\r\n              src=\"assets/images/Add.png\"\r\n              onclick=\"this.onOpenAddForm('form1')\"\r\n              class=\"content__toDo__h__Add\"\r\n            />\r\n          </div>\r\n          {@each taskList as item}\r\n          <div ondblclick=\"this.change('form1','taskList','${item.id}')\" oncontextmenu=\"this.menus('${item.id}','taskList')\" class=\"content__toDo__box\">\r\n            <div class=\"content__toDo__box__one\">\r\n              ${item.name}\r\n              <img src=\"assets/images/High.png\" alt=\"\" />\r\n            </div>\r\n            <div class=\"content__toDo__box__two\">\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\"\r\n                  >Est. Time:</span\r\n                ><span>${item.estimateTime}</span>\r\n              </div>\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\"\r\n                  >Due Date:</span\r\n                ><span>${item.dueDate}</span>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- On Progress -->\r\n      <div class=\"content__two\">\r\n        <div class=\"content__two__h\">\r\n          <div class=\"content__two__h__text\">On Progress</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              Research\r\n              <img\r\n                class=\"content__two__boxs__title__lone\"\r\n                src=\"assets/images/Medium.png\"\r\n                alt=\"\"\r\n              />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span>1h30m</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span>06/04/2022</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              Brainstorming\r\n              <img src=\"assets/images/Low.png\" alt=\"\" />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span>1h30m</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span>06/04/2022</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              Brainstorming\r\n              <img src=\"assets/images/High.png\" alt=\"\" />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span>1h30m</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span>06/04/2022</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__no\">no</span>\r\n                </div>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Done-->\r\n      <div class=\"content__two content__three\">\r\n        <div class=\"content__three__h\">\r\n          <div class=\"content__three__h__text\">Done</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              Brainstorming\r\n              <img src=\"assets/images/High.png\" alt=\"\" />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span>1h30m</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span>06/04/2022</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__no\">no</span>\r\n                </div>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              Research\r\n              <img\r\n                class=\"content__two__boxs__title__lone\"\r\n                src=\"assets/images/Medium.png\"\r\n                alt=\"\"\r\n              />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span>1h30m</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span>06/04/2022</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  17:55—18:40\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  45m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  10m\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"footer\">\r\n      <!--  Stopwatch Timer > -->\r\n      <div class=\"footer__console\">\r\n        <div id=\"footer__console__time\" class=\"footer__console__time\">\r\n          00:00:00\r\n        </div>\r\n        <div class=\"footer__console__b\">\r\n          <img\r\n            class=\"footer__console__b__start\"\r\n            src=\"assets/images/Start.png\"\r\n            alt=\"\"\r\n            onclick=\"this.timeCountPause()\"\r\n          />\r\n          <img\r\n            id=\"footer__console__b__stop\"\r\n            class=\"footer__console__b__open\"\r\n            style=\"display: none\"\r\n            src=\"assets/images/Open.png\"\r\n            alt=\"\"\r\n            onclick=\"this.stopTimer()\"\r\n          />\r\n          <img\r\n            id=\"footer__console__b__open\"\r\n            class=\"footer__console__b__open\"\r\n            src=\"assets/images/Stop.png\"\r\n            alt=\"\"\r\n            onclick=\"this.startTimer()\"\r\n          />\r\n          <img\r\n            class=\"footer__console__b__Return\"\r\n            src=\"assets/images/return.png\"\r\n            alt=\"\"\r\n            onclick=\"this.timeCountRun()\"\r\n          />\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Music Player > -->\r\n      <div style=\"display: none\">\r\n        <audio\r\n          id=\"myaudio\"\r\n          src=\"../assets/mp3/Joji-BENEE-Afterthought(1).mp3\"\r\n        ></audio>\r\n      </div>\r\n      <div class=\"footer__display\">\r\n        <img src=\"assets/images/Song.png\" class=\"footer__display__photo\" />\r\n        <div class=\"footer__display__info\">\r\n          <div class=\"footer__display__info__title\">Aferthought</div>\r\n          <div class=\"footer__display__info__singer\">Joji</div>\r\n        </div>\r\n        <div class=\"footer__display__center\">\r\n          <div class=\"footer__display__center__cons\">\r\n            <img src=\"assets/images/Last.png\" alt=\"\" />\r\n            <img\r\n              src=\"assets/images/Play.png\"\r\n              id=\"stop\"\r\n              style=\"display: none\"\r\n              onclick=\"this.closePlay()\"\r\n              alt=\"\"\r\n            />\r\n            <img\r\n              src=\"assets/images/Stop.png\"\r\n              id=\"play\"\r\n              onclick=\"this.play()\"\r\n              alt=\"\"\r\n            />\r\n            <img src=\"assets/images/Next.png\" alt=\"\" />\r\n          </div>\r\n          <div class=\"footer__display__center__progressbar\">\r\n            <span>3:18</span>\r\n            <span class=\"lone\">\r\n              <span></span>\r\n            </span>\r\n            <span>4:09</span>\r\n          </div>\r\n        </div>\r\n        <div class=\"footer__display__right\">\r\n          <img src=\"assets/images/Order.png\" alt=\"\" />\r\n          <img src=\"assets/images/Playlist.png\" alt=\"\" />\r\n          <img src=\"assets/images/Volume.png\" alt=\"\" />\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form1\" class=\"form-box wh100\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title\">Add Task</div>\r\n      <div class=\"form-item\">\r\n        <label>Task name</label>\r\n        <input\r\n          value=\"${form1.name}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'name', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Due date</label>\r\n        <input\r\n          value=\"${form1.dueDate}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'dueDate', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Task priority</label>\r\n        <input\r\n          value=\"${form1.taskPriority}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'taskPriority', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Eestimate time</label>\r\n        <input\r\n          value=\"${form1.estimateTime}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'estimateTime', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form1')\">Save</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form2\" class=\"form-box wh100 flex\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title\">Add Reading</div>\r\n      <div class=\"form-item\">\r\n        <label>Name the reading</label>\r\n        <input\r\n          value=\"${form2.name}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'name', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Read link</label>\r\n        <input\r\n          value=\"${form2.readLink}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'readLink', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Project name</label>\r\n        <input\r\n          value=\"${form2.projectName}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'projectName', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form2')\">Save</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ul id=\"menus\">\r\n  <li id=\"sc\">删除</li>\r\n</ul>\r\n";
+},{}],"g467j":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "FlowTimeTracker", ()=>FlowTimeTracker
+);
+parcelHelpers.export(exports, "FlowTimeTrackerItem", ()=>FlowTimeTrackerItem
+);
+class FlowTimeTracker {
+    id = '';
+    start = 0;
+    end = 0;
+    name = '--';
+    trackers = [];
+}
+class FlowTimeTrackerItem {
+    start = 0;
+    end = 0;
+    break = false;
+    restTime = 0;
+}
 
-},{}],"aNzNG":[function() {},{}]},["3T0ci","7SwCM"], "7SwCM", "parcelRequire60da")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"h1n6Q":[function(require,module,exports) {
+module.exports = "<div class=\"box\" onclick=\"this.acac()\">\r\n  <!-- Left Bar -->\r\n  <div class=\"left\">\r\n    <div class=\"left__Favicon\">\r\n      <img src=\"assets/images/Favicon.png\" alt=\"\" />\r\n    </div>\r\n    <div class=\"left__box\">\r\n      <div\r\n        class=\"menu-item\"\r\n        onmouseover=\"this.showMenu('menuAdd')\"\r\n        onmouseleave=\"this.hideMenu()\"\r\n      >\r\n        <div class=\"menu-tag left__box-item Quickadd\">\r\n          <img src=\"assets/images/Quickadd.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuAdd\" class=\"menu-box menu-add\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Add</div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form1')\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon reorder\"></i>Task</span\r\n            >\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form2')\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon chrome_reader_mode\"></i>Reading</span\r\n            >\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div\r\n        class=\"menu-item\"\r\n        onmouseover=\"this.showMenu('menuTimer')\"\r\n        onmouseleave=\"this.hideMenu()\"\r\n      >\r\n        <div class=\"menu-tag left__box-item Quicktimer\">\r\n          <img src=\"assets/images/Quicktimer.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuTimer\" class=\"menu-box menu-timer\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Timer</div>\r\n          <div class=\"li li-item\" onclick=\"this.startTimer()\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon timer\"></i>Startwatch Timer</span\r\n            >\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.addFlowTimeTracker()\">\r\n            <span class=\"flex unpointer\"\r\n              ><i class=\"mt-icon timelapse\"></i>Flow Time Tracker</span\r\n            >\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"left__user\">\r\n      <img src=\"assets/images/user.png\" alt=\"\" />\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"right\">\r\n    <!-- Top Flow Time Tracker -->\r\n    <div class=\"right__header\">\r\n      <div id=\"right__header__title\" class=\"right__header__title\">\r\n        {@if editTimeTracker}\r\n        <input\r\n          id=\"timeTrackerName\"\r\n          type=\"text\"\r\n          class=\"flow-time-name\"\r\n          placeholder=\"Please inpout tracker name\"\r\n        />\r\n        {@else} What are you working on? {@/if}\r\n      </div>\r\n      <!-- <div id=\"Tracker\" style=\"display: none;\" class=\"right__header__title\">Write down what are you going there.</div> -->\r\n      <div class=\"right__header__date\">00:22:33</div>\r\n      <div class=\"right__header__button\">\r\n        <img\r\n          class=\"right__header__button-img\"\r\n          src=\"assets/images/InterrupSmall.png\"\r\n          alt=\"\"\r\n        />\r\n        {@if editTimeTracker}\r\n        <img\r\n          class=\"right__header__button-img selected\"\r\n          src=\"assets/images/Worktime.png\"\r\n          alt=\"\"\r\n          onclick=\"this.addFlowTImeTracker()\"\r\n        />\r\n        {@else}\r\n        <img\r\n          class=\"right__header__button-img\"\r\n          src=\"assets/images/Worktime.png\"\r\n          alt=\"\"\r\n        />\r\n        {@/if}\r\n        <img\r\n          class=\"right__header__button-img\"\r\n          src=\"assets/images/BreaktimeSmall.png\"\r\n          alt=\"\"\r\n        />\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"content\">\r\n      <div class=\"content__one\">\r\n        <!-- Reading——Reading List Creator -->\r\n        <div class=\"content__Reading\">\r\n          <div class=\"content__Reading__h\">\r\n            <div class=\"content__Reading__h__text\">Reading</div>\r\n            <img\r\n              src=\"assets/images/Add.png\"\r\n              onclick=\"this.onOpenAddForm('form2')\"\r\n              class=\"content__Reading__h__Add\"\r\n            />\r\n            <img\r\n              src=\"assets/images/Openlink.png\"\r\n              class=\"content__Reading__h__Openlink\"\r\n            />\r\n          </div>\r\n          {@each readList as item}\r\n          <div\r\n            ondblclick=\"this.change('form2','readList','${item.id}')\"\r\n            oncontextmenu=\"this.menus('${item.id}','readList')\"\r\n            class=\"content__Reading__c\"\r\n          >\r\n            <div class=\"content__Reading__c__h\">\r\n              <div class=\"content__Reading__c__h__text\">Group Name</div>\r\n              <img\r\n                src=\"assets/images/Add.png\"\r\n                class=\"content__Reading__c__h__Add\"\r\n              />\r\n              <img\r\n                src=\"assets/images/Openlink.png\"\r\n                class=\"content__Reading__c__h__Openlink\"\r\n              />\r\n            </div>\r\n            <div class=\"content__Reading__c__box\">${item.name}</div>\r\n            <div class=\"content__Reading__c__box\">${item.readLink}</div>\r\n            <div class=\"content__Reading__c__box\">${item.projectName}</div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n\r\n        <!-- To Do——Task List  -->\r\n        <div class=\"content__toDo\">\r\n          <div class=\"content__toDo__h\">\r\n            <div class=\"content__toDo__h__text\">To Do</div>\r\n            <img\r\n              src=\"assets/images/Add.png\"\r\n              onclick=\"this.onOpenAddForm('form1')\"\r\n              class=\"content__toDo__h__Add\"\r\n            />\r\n          </div>\r\n          {@each taskList as item}\r\n          <div\r\n            ondblclick=\"this.change('form1','taskList','${item.id}')\"\r\n            oncontextmenu=\"this.menus('${item.id}','taskList')\"\r\n            class=\"content__toDo__box\"\r\n          >\r\n            <div class=\"content__toDo__box__one\">\r\n              ${item.name}\r\n              <img src=\"assets/images/High.png\" alt=\"\" />\r\n            </div>\r\n            <div class=\"content__toDo__box__two\">\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\"\r\n                  >Est. Time:</span\r\n                ><span>${item.estimateTime}</span>\r\n              </div>\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\"\r\n                  >Due Date:</span\r\n                ><span>${item.dueDate}</span>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- On Progress -->\r\n      <div class=\"content__two\">\r\n        <div class=\"content__two__h\">\r\n          <div class=\"content__two__h__text\">On Progress</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each progressList as item}\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              <img\r\n                class=\"content__two__boxs__title__lone\"\r\n                src=\"assets/images/Medium.png\"\r\n                alt=\"\"\r\n              />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemResetTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Done-->\r\n      <div class=\"content__two content__three\">\r\n        <div class=\"content__three__h\">\r\n          <div class=\"content__three__h__text\">Done</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each doneList as item}\r\n          <div class=\"content__two__box\">\r\n            <img\r\n              class=\"content__two__box__stop\"\r\n              src=\"assets/images/Stop.png\"\r\n              alt=\"\"\r\n            />\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              <img\r\n                class=\"content__two__boxs__title__lone\"\r\n                src=\"assets/images/Medium.png\"\r\n                alt=\"\"\r\n              />\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span\r\n                ><span class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span\r\n                ><span class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemResetTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"footer\">\r\n      <!--  Stopwatch Timer > -->\r\n      <div class=\"footer__console\">\r\n        <div id=\"footer__console__time\" class=\"footer__console__time\">\r\n          00:00:00\r\n        </div>\r\n        <div class=\"footer__console__b\">\r\n          <img\r\n            class=\"footer__console__b__start\"\r\n            src=\"assets/images/Start.png\"\r\n            alt=\"\"\r\n            onclick=\"this.timeCountPause()\"\r\n          />\r\n          <img\r\n            id=\"footer__console__b__stop\"\r\n            class=\"footer__console__b__open\"\r\n            style=\"display: none\"\r\n            src=\"assets/images/Open.png\"\r\n            alt=\"\"\r\n            onclick=\"this.stopTimer()\"\r\n          />\r\n          <img\r\n            id=\"footer__console__b__open\"\r\n            class=\"footer__console__b__open\"\r\n            src=\"assets/images/Stop.png\"\r\n            alt=\"\"\r\n            onclick=\"this.startTimer()\"\r\n          />\r\n          <img\r\n            class=\"footer__console__b__Return\"\r\n            src=\"assets/images/return.png\"\r\n            alt=\"\"\r\n            onclick=\"this.timeCountRun()\"\r\n          />\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Music Player > -->\r\n      <div style=\"display: none\">\r\n        <audio\r\n          id=\"myaudio\"\r\n          src=\"../assets/mp3/Joji-BENEE-Afterthought(1).mp3\"\r\n        ></audio>\r\n      </div>\r\n      <div class=\"footer__display\">\r\n        <img src=\"assets/images/Song.png\" class=\"footer__display__photo\" />\r\n        <div class=\"footer__display__info\">\r\n          <div class=\"footer__display__info__title\">Aferthought</div>\r\n          <div class=\"footer__display__info__singer\">Joji</div>\r\n        </div>\r\n        <div class=\"footer__display__center\">\r\n          <div class=\"footer__display__center__cons\">\r\n            <img src=\"assets/images/Last.png\" alt=\"\" />\r\n            <img\r\n              src=\"assets/images/Play.png\"\r\n              id=\"stop\"\r\n              style=\"display: none\"\r\n              onclick=\"this.closePlay()\"\r\n              alt=\"\"\r\n            />\r\n            <img\r\n              src=\"assets/images/Stop.png\"\r\n              id=\"play\"\r\n              onclick=\"this.play()\"\r\n              alt=\"\"\r\n            />\r\n            <img src=\"assets/images/Next.png\" alt=\"\" />\r\n          </div>\r\n          <div class=\"footer__display__center__progressbar\">\r\n            <span>3:18</span>\r\n            <span class=\"lone\">\r\n              <span></span>\r\n            </span>\r\n            <span>4:09</span>\r\n          </div>\r\n        </div>\r\n        <div class=\"footer__display__right\">\r\n          <img src=\"assets/images/Order.png\" alt=\"\" />\r\n          <img src=\"assets/images/Playlist.png\" alt=\"\" />\r\n          <img src=\"assets/images/Volume.png\" alt=\"\" />\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form1\" class=\"form-box wh100\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title\">Add Task</div>\r\n      <div class=\"form-item\">\r\n        <label>Task name</label>\r\n        <input\r\n          value=\"${form1.name}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'name', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Due date</label>\r\n        <input\r\n          value=\"${form1.dueDate}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'dueDate', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Task priority</label>\r\n        <input\r\n          value=\"${form1.taskPriority}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'taskPriority', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Eestimate time</label>\r\n        <input\r\n          value=\"${form1.estimateTime}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'estimateTime', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form1')\">Save</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form2\" class=\"form-box wh100 flex\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title\">Add Reading</div>\r\n      <div class=\"form-item\">\r\n        <label>Name the reading</label>\r\n        <input\r\n          value=\"${form2.name}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'name', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Read link</label>\r\n        <input\r\n          value=\"${form2.readLink}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'readLink', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Project name</label>\r\n        <input\r\n          value=\"${form2.projectName}\"\r\n          placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'projectName', this.value)\"\r\n        />\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form2')\">Save</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ul id=\"menus\">\r\n  <li id=\"sc\">删除</li>\r\n</ul>\r\n";
+
+},{}],"aNzNG":[function() {},{}],"79PXr":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "flowEstTime", ()=>flowEstTime
+);
+parcelHelpers.export(exports, "flowItemResetTime", ()=>flowItemResetTime
+);
+parcelHelpers.export(exports, "flowItemWorkTime", ()=>flowItemWorkTime
+);
+parcelHelpers.export(exports, "flowDueDate", ()=>flowDueDate
+);
+parcelHelpers.export(exports, "flowDucation", ()=>flowDucation
+);
+var _utils = require("./utils");
+const flowEstTime = (v)=>{
+    if (!v || !v.start) return "-";
+    var end = v.end;
+    if (end < 1) end = _utils.getUnixSeconds();
+    var ducation = end - v.start;
+    return _utils.secondToHMS(ducation);
+};
+const flowItemResetTime = (v)=>{
+    if (!v) return "-";
+    var reset = v.reset ? v.reset : 0;
+    if (reset < 1) reset = _utils.getUnixSeconds();
+    var end = v.end;
+    if (end < 1) end = reset;
+    var ducation = end - v.reset;
+    return _utils.secondToHMS(ducation);
+};
+const flowItemWorkTime = (v)=>{
+    if (!v || !v.start) return "-";
+    var rest = v.rest;
+    if (rest < 1) rest = _utils.getUnixSeconds();
+    var ducation = rest - v.start;
+    return _utils.secondToHMS(ducation);
+};
+const flowDueDate = (v)=>{
+    if (!v || !v.start) return "-";
+    var start = v.start;
+    return _utils.formatDate(new Date(start * 1000), "MM/dd/yyyy");
+};
+const flowDucation = (v)=>{
+    if (!v || !v.start) return "-";
+    var end = v.end;
+    if (end < 1) end = _utils.getUnixSeconds();
+    var s = new Date(v.start * 1000);
+    var e = new Date(end * 1000);
+    return _utils.formatDate(s, "hh:mm") + " ~ " + _utils.formatDate(s, "hh:mm");
+};
+
+},{"./utils":"e8TO1","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["3T0ci","7SwCM"], "7SwCM", "parcelRequire60da")
 
 //# sourceMappingURL=index.f18de3a7.js.map

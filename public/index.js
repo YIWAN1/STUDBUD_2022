@@ -4,6 +4,7 @@ import { kvdb } from "./js/kvdb.js";
 import juicer from "juicer";
 
 import "./main.scss";
+import { flowDucation, flowDueDate, flowEstTime, flowItemResetTime, flowItemWorkTime } from "./js/flowTime.js";
 
 (function () {
   juicer.set({
@@ -13,9 +14,14 @@ import "./main.scss";
     "tag::interpolateClose": "}",
     "tag::noneencodeOpen": "$${",
     "tag::noneencodeClose": "}",
-    "tag::commentOpen": "{#", // 
+    "tag::commentOpen": "{#", //
     "tag::commentClose": "}",
   });
+  juicer.register("flowDueDate", flowDueDate);
+  juicer.register("flowEstTime", flowEstTime);
+  juicer.register("flowDucation", flowDucation);
+  juicer.register("flowItemResetTime", flowItemResetTime);
+  juicer.register("flowItemWorkTime", flowItemWorkTime);
 
   kvdb.init();
 
