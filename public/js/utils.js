@@ -15,7 +15,7 @@ export const formatTime = (c) => {
 };
 
 export const randId = () => {
-  const c = "ID" + Math.random();
+  const c = "ID" + formatDate(new Date, 'yyMMddhhmmss') + Math.random();
   return c.replace(/[^0-1a-zA-Z]+/gi, "");
 };
 

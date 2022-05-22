@@ -51,7 +51,19 @@ export class BindObject {
     this._render();
   }
 
+  /*
+   * function (key?: string, defaultValue?: any)
+   */
   get() {
+    if (arguments.length > 0 && arguments[0]) {
+      if (arguments.length > 1) {
+        if (typeof this._val[arguments[0]] == "undefined") {
+          return arguments[1];
+        }
+        return this._clone(this._val[arguments[0]]);
+      }
+      return this._clone(this._val[arguments[0]]);
+    }
     return this._clone(this._val);
   }
 
@@ -101,8 +113,8 @@ export const observeRender = (me, containerId, tpl, data) => {
   }
   const c = tpl.render(data);
   // console.log('c', c, tpl, data);
-  if(!c) {
-    console.log('template parse error in .shtml file')
+  if (!c) {
+    console.log("template parse error in .shtml file");
     return;
   }
 

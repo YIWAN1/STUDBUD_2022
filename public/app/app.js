@@ -5,7 +5,6 @@ import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
 import { formatTime, getUnixSeconds, randId } from "../js/utils";
-import { is } from "express/lib/request";
 import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
 
@@ -15,9 +14,11 @@ export class App {
   componentFooter;
 
   data = {};
+  trackerItem = null;
   containerId = "";
 
   timeCount = 0;
+  trackerTimer = 0;
 
   constructor(id) {
     this.data = new BindObject(this);
@@ -37,6 +38,7 @@ export class App {
       doneList: [],
       taskList: [],
       editTimeTracker: false,
+      selectTrackerItem: null,
       form1: {
         id: "",
         name: "",
@@ -61,14 +63,17 @@ export class App {
     const readList = await kvdb.get("readList", []);
     const progressList = await kvdb.get("progressList", []);
     const doneList = await kvdb.get("doneList", []);
+    const selectTrackerItem = await kvdb.get("selectTrackerItem", null);
 
     const data = this.data.get();
     data["taskList"] = taskList ? taskList : [];
-    data["readList"] = taskList ? readList : [];
-    data["progressList"] = taskList ? progressList : [];
-    data["doneList"] = taskList ? doneList : [];
+    data["readList"] = readList ? readList : [];
+    data["progressList"] = progressList ? progressList : [];
+    data["doneList"] = doneList ? doneList : [];
+    data["selectTrackerItem"] = selectTrackerItem ? selectTrackerItem : null;
 
     this.data.set(data);
+    this.updateSelectTrackerStatus();
   }
 
   viewRender() {
@@ -256,7 +261,7 @@ export class App {
     };
   }
   cancel(id, type) {
-    var data = this.data.get();
+    const data = this.data.get();
     var list = data[type];
     list.forEach((v, i) => {
       if (v.id === id) {
@@ -272,14 +277,18 @@ export class App {
   }
 
   change(type, listName, id) {
-    var data = this.data.get(),
-      list = data[listName],
-      items;
+    const data = this.data.get();
+    var list = data[listName];
+    var items = null;
     list.forEach((v, i) => {
       if (v.id === id) {
         items = v;
       }
     });
+    if (!items) {
+      return;
+    }
+
     data[type] = items;
     this.data.onlySet(data);
     this.viewRender();
@@ -290,9 +299,10 @@ export class App {
   }
 
   addFlowTimeTracker() {
-    this.data.set({
+    this.data.onlySet({
       editTimeTracker: true,
     });
+    this.cancelSelectTracker();
   }
 
   addFlowTImeTracker() {
@@ -314,5 +324,78 @@ export class App {
     console.log(data);
     this.editListItem("progressList", data, true);
     this.viewRender();
+  }
+
+  findOneTrackerItem(id) {
+    if (!id) {
+      return null;
+    }
+    const data = this.data.get();
+    for (var i = 0; i < data.progressList.length; i++) {
+      var item = data.progressList[i];
+      if (item.id == id) {
+        return item;
+      }
+    }
+    for (var i = 0; i < data.doneList.length; i++) {
+      var item = data.progressList[i];
+      if (item.id == id) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  editTrackerItem(id) {
+    var selectItem = this.findOneTrackerItem(id);
+    if (!selectItem) {
+      return;
+    }
+
+    kvdb.set("selectTrackerItem", selectItem);
+    this.data.set({
+      selectTrackerItem: selectItem,
+    });
+    this.updateSelectTrackerStatus();
+  }
+
+  updateSelectTrackerStatus() {
+    const tracker = this.data.get("selectTrackerItem", null);
+    if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
+      if (this.trackerTimer) {
+        clearTimeout(this.trackerTimer);
+      }
+      return;
+    }
+    var lastItem = tracker.trackers[tracker.trackers.length - 1];
+    var reset = typeof lastItem.reset != "undefined" ? lastItem.reset : 0;
+    if (reset > 0) {
+      this.updateTrackerIme(reset, lastItem.end);
+    } else {
+      this.updateTrackerIme(lastItem.start, reset);
+    }
+  }
+
+  updateTrackerIme(start, end) {
+    var over = end;
+    if (end < 1) {
+      over = getUnixSeconds();
+    }
+    var s = over - start;
+    document.getElementById("trackerTimer").innerHTML = formatTime(s);
+    if (this.trackerTimer) {
+      clearTimeout(this.trackerTimer);
+    }
+    this.trackerTimer = setTimeout(() => {
+      this.updateTrackerIme(start, end);
+    }, 300);
+  }
+
+  cancelSelectTracker() {
+    this.data.set({
+      selectTrackerItem: null,
+    });
+    kvdb.del("selectTrackerItem");
+    this.updateSelectTrackerStatus();
   }
 }

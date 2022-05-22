@@ -4,7 +4,13 @@ import { kvdb } from "./js/kvdb.js";
 import juicer from "juicer";
 
 import "./main.scss";
-import { flowDucation, flowDueDate, flowEstTime, flowItemResetTime, flowItemWorkTime } from "./js/flowTime.js";
+import {
+  flowDucation,
+  flowDueDate,
+  flowEstTime,
+  flowItemResetTime,
+  flowItemWorkTime,
+} from "./js/flowTime.js";
 
 (function () {
   juicer.set({
@@ -17,6 +23,7 @@ import { flowDucation, flowDueDate, flowEstTime, flowItemResetTime, flowItemWork
     "tag::commentOpen": "{#", //
     "tag::commentClose": "}",
   });
+  juicer.register("json", (v) => JSON.stringify(v, null, " "));
   juicer.register("flowDueDate", flowDueDate);
   juicer.register("flowEstTime", flowEstTime);
   juicer.register("flowDucation", flowDucation);

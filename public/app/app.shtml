@@ -66,10 +66,13 @@
           class="flow-time-name"
           placeholder="Please inpout tracker name"
         />
-        {@else} What are you working on? {@/if}
+        {@else} {@if !!selectTrackerItem}
+        <span>${selectTrackerItem}</span>
+        {@else}
+        <span>What are you working on?</span> {@/if} {@/if}
       </div>
       <!-- <div id="Tracker" style="display: none;" class="right__header__title">Write down what are you going there.</div> -->
-      <div class="right__header__date">00:22:33</div>
+      <div id="trackerTimer" class="right__header__date">00:00:00</div>
       <div class="right__header__button">
         <img
           class="right__header__button-img"
@@ -183,11 +186,21 @@
         <div class="content__twos__box">
           {@each progressList as item}
           <div class="content__two__box">
+            {@if selectTrackerItem && item.id == selectTrackerItem.id}
+            <img
+              class="content__two__box__stop"
+              src="assets/images/Open.png"
+              alt=""
+              onclick="this.cancelSelectTracker()"
+            />
+            {@else}
             <img
               class="content__two__box__stop"
               src="assets/images/Stop.png"
               alt=""
+              onclick="this.editTrackerItem('${item.id}')"
             />
+            {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
               <img
@@ -199,11 +212,15 @@
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
                 <span class="content__two__boxs-item__title">Est. Time:</span
-                ><span class="content__two__boxs-item__value">${item|flowEstTime}</span>
+                ><span class="content__two__boxs-item__value"
+                  >${item|flowEstTime}</span
+                >
               </div>
               <div class="content__two__boxs-item">
                 <span class="content__two__boxs-item__title">Due Date:</span
-                ><span class="content__two__boxs-item__value">${item|flowDueDate}</span>
+                ><span class="content__two__boxs-item__value"
+                  >${item|flowDueDate}</span
+                >
               </div>
               {@each item.trackers as tracker}
               <div class="content__two__boxs-item">
@@ -221,7 +238,9 @@
                 </div>
                 <div class="content__two__boxs-items">
                   <img src="assets/images/InterrupSmall.png" alt="" />
-                  <span class="content__two__boxs-items__yes">yes</span>
+                  <span class="content__two__boxs-items__yes">
+                    {@if tracker.break} yes {@else} no {@/if}
+                  </span>
                 </div>
               </div>
               {@/each}
@@ -239,11 +258,21 @@
         <div class="content__twos__box">
           {@each doneList as item}
           <div class="content__two__box">
+            {@if selectTrackerItem && item.id == selectTrackerItem.id}
+            <img
+              class="content__two__box__stop"
+              src="assets/images/Open.png"
+              alt=""
+              onclick="this.cancelSelectTracker()"
+            />
+            {@else}
             <img
               class="content__two__box__stop"
               src="assets/images/Stop.png"
               alt=""
+              onclick="this.editTrackerItem('${item.id}')"
             />
+            {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
               <img
@@ -255,11 +284,15 @@
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
                 <span class="content__two__boxs-item__title">Est. Time:</span
-                ><span class="content__two__boxs-item__value">${item|flowEstTime}</span>
+                ><span class="content__two__boxs-item__value"
+                  >${item|flowEstTime}</span
+                >
               </div>
               <div class="content__two__boxs-item">
                 <span class="content__two__boxs-item__title">Due Date:</span
-                ><span class="content__two__boxs-item__value">${item|flowDueDate}</span>
+                ><span class="content__two__boxs-item__value"
+                  >${item|flowDueDate}</span
+                >
               </div>
               {@each item.trackers as tracker}
               <div class="content__two__boxs-item">
