@@ -126,11 +126,11 @@
   font-weight: bold;
 }
 
-#app .content__two__box {
+#app .content__two__box, #app .content__toDo__box {
   border: 2px dashed #0000;
 }
 
-#app .content__two__box:hover {
+#app .content__two__box:hover, #app .content__toDo__box:hover {
   background-color: #e2e2e2;
   border-color: orange;
 }
@@ -415,6 +415,7 @@ input {
   border-radius: 10rem;
   margin: 20rem auto auto;
   padding: 18rem 21rem;
+  position: relative;
 }
 
 .content__toDo__box__one {

@@ -133,10 +133,10 @@
     font-weight: bold;
   }
 
-  .content__two__box {
+  .content__two__box, .content__toDo__box{
     border: 2px dashed transparent;
   }
-  .content__two__box:hover {
+  .content__two__box:hover,.content__toDo__box:hover {
     background-color: #e2e2e2;
     border-color: orange;
   }

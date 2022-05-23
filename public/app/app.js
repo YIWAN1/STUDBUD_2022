@@ -28,7 +28,7 @@ export class App {
   //
   components = [];
   componentFooter;
-
+  prev = 0;
   data = {};
   trackerItem = null;
   containerId = "";
@@ -123,6 +123,7 @@ export class App {
 
   // open form panel
   onOpenAddForm(id) {
+    console.log(id);
     this.hideFloatLayer();
     document.getElementById(id).style.display = "block";
   }
@@ -149,6 +150,9 @@ export class App {
     if (!formData.id) {
       isAdd = true;
       formData.id = randId(); // set data id
+      formData.trackers = []; // set data id
+      const item = new FlowTimeTrackerItem();
+      formData.trackers.push(item);
     }
 
     this.hideFloatLayer();
@@ -322,16 +326,32 @@ export class App {
   hideRightMenuLayer() {
     document.getElementById("menus").style.display = "none";
   }
+  dblclick(type, listName, e, el, id, domId) {
+    var now = new Date().getTime();
+    var x = now - this.prev;
+    var tmr;
+    this.prev = now;
+    if (x < 500) {
+      tmr = setTimeout(() => {
+        this.change(type, listName, id);
+      }, 1);
+    } else {
+      clearTimeout(tmr);
+      this.dragDown(e, el, id, domId);
+    }
+  }
 
   change(type, listName, id) {
+    console.log(type, listName, id);
     const data = this.data.get();
     const list = data[listName];
-    const items = null;
+    let items = null;
     list.forEach((v, i) => {
       if (v.id === id) {
         items = v;
       }
     });
+    console.log(items);
     if (!items) {
       return;
     }
@@ -378,15 +398,21 @@ export class App {
     if (!id) {
       return null;
     }
-    const data = this.data.get();
+    var data = this.data.get();
     for (var i = 0; i < data.progressList.length; i++) {
-      const item = data.progressList[i];
+      var item = data.progressList[i];
       if (item.id == id) {
         return item;
       }
     }
     for (var i = 0; i < data.doneList.length; i++) {
-      const item = data.progressList[i];
+      var item = data.doneList[i];
+      if (item.id == id) {
+        return item;
+      }
+    }
+    for (var i = 0; i < data.taskList.length; i++) {
+      var item = data.taskList[i];
       if (item.id == id) {
         return item;
       }
@@ -396,6 +422,7 @@ export class App {
 
   editTrackerItem(id) {
     const selectItem = this.findOneTrackerItem(id);
+
     if (!selectItem) {
       return;
     }
@@ -508,7 +535,7 @@ export class App {
     this.updateSelectTrackerStatus();
   }
 
-  setFlowTrackerDone(id) {
+  setFlowTrackerDone(id, domId) {
     const tracker = this.findOneTrackerItem(id);
     if (!tracker) {
       return;
@@ -528,9 +555,16 @@ export class App {
         }
       }
       console.log("++++++++++++++++++", tracker);
-
-      this.editListItem("progressList", tracker, false, true);
-      this.editListItem("doneList", tracker, true);
+      // this.editListItem("progressList", tracker, false, true);
+      // this.editListItem("doneList", tracker, true);
+      console.log('domId',domId)
+      if (domId == "doneListArae") {
+        this.editListItem("progressList", tracker, false, true);
+        this.editListItem("doneList", tracker, true);
+      } else {
+        this.editListItem("taskList", tracker, false, true);
+        this.editListItem("progressList", tracker, true);
+      }
 
       const selectTrackerItem = this.data.get("selectTrackerItem", null);
       if (selectTrackerItem && selectTrackerItem.id == tracker.id) {
@@ -545,7 +579,7 @@ export class App {
   /******************* Drage layer ********************* */
   /***************************************************** */
 
-  dragDown(e, el, id) {
+  dragDown(e, el, id, domId) {
     e = e || window.event;
 
     _dragMaster = this;
@@ -574,6 +608,7 @@ export class App {
     cel.setAttribute("data-layer-x", e.layerX);
     cel.setAttribute("data-layer-y", e.layerY);
     cel.setAttribute("data-id", id);
+    cel.setAttribute("dom-id", domId);
     this.dEle = cel;
 
     document.body.appendChild(this.dEle);
@@ -585,7 +620,7 @@ export class App {
 
     e = e || window.event;
 
-    const aimBox = document.getElementById("doneListArae");
+    const aimBox = document.getElementById(this.dEle.getAttribute("dom-id"));
     const inArea = this.dragInArea(e, aimBox);
     if (inArea) {
       aimBox.classList.add("drag-status-in");
@@ -604,7 +639,7 @@ export class App {
       ? window.getSelection().removeAllRanges()
       : document.selection.empty();
 
-    const aimBox = document.getElementById("doneListArae");
+    const aimBox = document.getElementById(this.dEle.getAttribute("dom-id"));
     const inArea = this.dragInArea(e, aimBox);
     aimBox.classList.remove("drag-status-in");
     console.log("dragUp", inArea);
@@ -617,10 +652,11 @@ export class App {
     if (this.dEle) {
       const id = this.dEle.getAttribute("data-id");
       document.body.removeChild(this.dEle);
+      let domId = this.dEle.getAttribute("dom-id");
       this.dEle = null;
 
       if (inArea) {
-        this.setFlowTrackerDone(id);
+        this.setFlowTrackerDone(id, domId);
       }
     }
   }
