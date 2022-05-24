@@ -884,12 +884,11 @@ input {
 }
 
 #menus {
-  margin: 0;padding: 0;
+  margin: 0;
+  padding: 0;
   text-align: center;
   line-height: 35px;
   width: 80px;
-  border: 1px solid black;
-  border: 1px solid black;
   position: absolute;
   left: 0;
   top: 0;
@@ -897,8 +896,14 @@ input {
   display: none;
   outline: none;
   background: white;
-  li{
+  li {
     cursor: pointer;
+    color: red;
+    border: 1px solid red;
+  }
+  li:hover {
+    background-color: red;
+    color: #fff;
   }
 }
 
@@ -929,10 +934,6 @@ button.outline {
 .drag-status-in {
   background-color: rgb(0, 0, 255, 0.3);
 }
-
-
-
-
 
 /*****************************/
 @import "style/bs-general.scss";

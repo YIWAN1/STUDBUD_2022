@@ -66,6 +66,7 @@
   width: 360rem;
   text-align: left;
   background-color: #fff;
+  border-radius: 10px;
 }
 
 #app .form-box .form-panel .form-title {
@@ -981,7 +982,6 @@ input {
   text-align: center;
   width: 80px;
   background: #fff;
-  border: 1px solid #000;
   outline: none;
   margin: 0;
   padding: 0;
@@ -995,6 +995,13 @@ input {
 
 #menus li {
   cursor: pointer;
+  color: red;
+  border: 1px solid red;
+}
+
+#menus li:hover {
+  color: #fff;
+  background-color: red;
 }
 
 button {

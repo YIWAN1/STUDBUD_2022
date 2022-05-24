@@ -160,7 +160,7 @@ export class App {
     if (formName == "form1") {
       this.editListItem("taskList", formData, isAdd);
     } else if (formName == "form2") {
-      this.editListItem("", formData, isAdd);
+      this.editListItem("readList", formData, isAdd);
     }
 
     this.data.onlyReset("form1");
@@ -328,6 +328,7 @@ export class App {
   }
   dblclick(type, listName, e, el, id, domId) {
     var now = new Date().getTime();
+
     var x = now - this.prev;
     var tmr;
     this.prev = now;
@@ -342,7 +343,6 @@ export class App {
   }
 
   change(type, listName, id) {
-    console.log(type, listName, id);
     const data = this.data.get();
     const list = data[listName];
     let items = null;

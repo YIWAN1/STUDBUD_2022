@@ -64,12 +64,12 @@
           id="timeTrackerName"
           type="text"
           class="flow-time-name"
-          placeholder="Please inpout tracker name"
+          placeholder="Please input the task name you want to track time"
         />
         {@else} {@if !!selectTrackerItem}
         <span>${selectTrackerItem.name}</span>
         {@else}
-        <span>What are you working on?</span> {@/if} {@/if}
+        <span >What are you working on?</span> {@/if} {@/if}
       </div>
       <!-- <div id="Tracker" style="display: none;" class="right__header__title">Write down what are you going there.</div> -->
       <div id="trackerTimer" class="right__header__date">00:00:00</div>
@@ -149,13 +149,17 @@
             <div class="content__Reading__c__h">
               <div class="content__Reading__c__h__text">Group Name</div>
               <img
+              onclick="this.onOpenAddForm('form2')"
                 src="assets/images/Add.png"
                 class="content__Reading__c__h__Add"
               />
-              <img
+              <a href='${item.readLink}' target="_blank">
+                <img
                 src="assets/images/Openlink.png"
                 class="content__Reading__c__h__Openlink"
               />
+              </a>
+         
             </div>
             <div class="content__Reading__c__box">${item.name}</div>
             <div class="content__Reading__c__box">${item.readLink}</div>
@@ -211,7 +215,7 @@
           <div
             id="card${item.id}"
             class="content__two__box"
-            onmousedown="this.dragDown(event, this, '${item.id}','doneListArae')"
+            onmousedown="this.dblclick('form1','progressList',event, this, '${item.id}','doneListArae')"
             oncontextmenu="this.onRightMenus('${item.id}','progressList')"
           >
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
@@ -267,7 +271,7 @@
                 <div class="content__two__boxs-items">
                   <img src="assets/images/InterrupSmall.png" alt="" />
                   <span class="content__two__boxs-items__yes">
-                    {@if tracker.break} yes {@else} no {@/if}
+                    {@if tracker.break} yes {@else}  <span class="content__two__boxs-items__no">no </span>{@/if}
                   </span>
                 </div>
               </div>
@@ -287,6 +291,7 @@
           {@each doneList as item}
           <div
             class="content__two__box"
+            onmousedown="this.dblclick('form1','doneList',event, this, '${item.id}','doneListArae')"
             oncontextmenu="this.onRightMenus('${item.id}','doneList')"
           >
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
@@ -456,6 +461,7 @@
         <input
           value="${form1.dueDate}"
           placeholder="Please input"
+          type="date"
           oninput="this.setFormValue('form1', 'dueDate', this.value)"
         />
       </div>
@@ -523,5 +529,5 @@
   </div>
 </div>
 <ul id="menus">
-  <li id="menusDelete" onclick="this.onMenusDelete(event)">删除</li>
+  <li id="menusDelete" onclick="this.onMenusDelete(event)">Delete</li>
 </ul>
