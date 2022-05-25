@@ -112,7 +112,7 @@ export class App {
   }
 
   setFormValue(formName, key, value) {
-    // console.log(formName, key, value, arguments);
+    console.log(formName, key, value, arguments);
     const data = this.data.get();
     if (!data[formName]) {
       data[formName] = {};
@@ -693,5 +693,8 @@ export class App {
 
     tmel1.innerHTML = formatTime2(ap.currentTime);
     tmel2.innerHTML = formatTime2(ap.duration);
+  }
+  caca(val){
+   console.log(val); 
   }
 }

@@ -63,16 +63,31 @@
 
 #app .form-box .form-panel {
   height: 100%;
-  width: 360rem;
+  width: 496rem;
   text-align: left;
   background-color: #fff;
   border-radius: 10px;
 }
 
 #app .form-box .form-panel .form-title {
+  justify-content: space-between;
   padding: 20px 20px 0;
   font-size: 40rem;
   font-weight: bold;
+}
+
+#app .form-box .form-panel .form-title span.close {
+  color: #111;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #eee;
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 21px;
+  display: inline-block;
 }
 
 #app .form-box .form-panel .form-item {
@@ -88,7 +103,7 @@
   color: #000 !important;
 }
 
-#app .form-box .form-panel .form-item input {
+#app .form-box .form-panel .form-item input, #app .form-box .form-panel .form-item select {
   width: 100%;
   height: 48rem;
   border: 1px solid #aaa;
@@ -99,13 +114,37 @@
   display: block;
 }
 
+#app .form-box .form-panel .form-item input option, #app .form-box .form-panel .form-item select option {
+  padding: 10px 0;
+}
+
+#app .form-box .form-panel .flex .form-item {
+  width: 50%;
+}
+
 #app .form-box .form-panel .form-btns {
   text-align: center;
   padding: 40px 0 32px;
 }
 
 #app .form-box .form-panel .form-btns button {
+  margin: 0 auto;
   font-size: 18rem;
+  display: block;
+}
+
+#app .form-box .form-panel .form-btns div {
+  width: 120px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0 auto 15px;
+  padding: 10px 0;
+  font-size: 18rem;
+}
+
+#app .form-box .form-panel .form-btns .Save {
+  color: #fff;
+  background-color: #4385f6;
 }
 
 #app .content__Reading__c .content__Reading__c__box {

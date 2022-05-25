@@ -5,47 +5,31 @@
       <img src="assets/images/Favicon.png" alt="" />
     </div>
     <div class="left__box">
-      <div
-        class="menu-item"
-        onmouseover="this.showMenu('menuAdd')"
-        onmouseleave="this.hideMenu()"
-      >
+      <div class="menu-item" onmouseover="this.showMenu('menuAdd')" onmouseleave="this.hideMenu()">
         <div class="menu-tag left__box-item Quickadd">
           <img src="assets/images/Quickadd.png" alt="" />
         </div>
         <div id="menuAdd" class="menu-box menu-add" style="display: none">
           <div class="li unpointer li-tl">Quick Add</div>
           <div class="li li-item" onclick="this.onOpenAddForm('form1')">
-            <span class="flex unpointer"
-              ><i class="mt-icon reorder"></i>Task</span
-            >
+            <span class="flex unpointer"><i class="mt-icon reorder"></i>Task</span>
           </div>
           <div class="li li-item" onclick="this.onOpenAddForm('form2')">
-            <span class="flex unpointer"
-              ><i class="mt-icon chrome_reader_mode"></i>Reading</span
-            >
+            <span class="flex unpointer"><i class="mt-icon chrome_reader_mode"></i>Reading</span>
           </div>
         </div>
       </div>
-      <div
-        class="menu-item"
-        onmouseover="this.showMenu('menuTimer')"
-        onmouseleave="this.hideMenu()"
-      >
+      <div class="menu-item" onmouseover="this.showMenu('menuTimer')" onmouseleave="this.hideMenu()">
         <div class="menu-tag left__box-item Quicktimer">
           <img src="assets/images/Quicktimer.png" alt="" />
         </div>
         <div id="menuTimer" class="menu-box menu-timer" style="display: none">
           <div class="li unpointer li-tl">Quick Timer</div>
           <div class="li li-item" onclick="this.startTimer()">
-            <span class="flex unpointer"
-              ><i class="mt-icon timer"></i>Startwatch Timer</span
-            >
+            <span class="flex unpointer"><i class="mt-icon timer"></i>Startwatch Timer</span>
           </div>
           <div class="li li-item" onclick="this.addFlowTimeTracker()">
-            <span class="flex unpointer"
-              ><i class="mt-icon timelapse"></i>Flow Time Tracker</span
-            >
+            <span class="flex unpointer"><i class="mt-icon timelapse"></i>Flow Time Tracker</span>
           </div>
         </div>
       </div>
@@ -60,66 +44,34 @@
     <div class="right__header">
       <div id="right__header__title" class="right__header__title">
         {@if editTimeTracker}
-        <input
-          id="timeTrackerName"
-          type="text"
-          class="flow-time-name"
-          placeholder="Please input the task name you want to track time"
-        />
+        <input id="timeTrackerName" type="text" class="flow-time-name"
+          placeholder="Please input the task name you want to track time" />
         {@else} {@if !!selectTrackerItem}
         <span>${selectTrackerItem.name}</span>
         {@else}
-        <span >What are you working on?</span> {@/if} {@/if}
+        <span>What are you working on?</span> {@/if} {@/if}
       </div>
       <!-- <div id="Tracker" style="display: none;" class="right__header__title">Write down what are you going there.</div> -->
       <div id="trackerTimer" class="right__header__date">00:00:00</div>
       {@if !selectTrackerItem}
       <div class="right__header__button">
-        <img
-          class="right__header__button-img"
-          src="assets/images/InterrupSmall.png"
-          alt=""
-        />
+        <img class="right__header__button-img" src="assets/images/InterrupSmall.png" alt="" />
         {@if editTimeTracker}
-        <img
-          class="right__header__button-img selected"
-          src="assets/images/Worktime.png"
-          alt=""
-          onclick="this.saveAddFlowTimeTracker()"
-        />
+        <img class="right__header__button-img selected" src="assets/images/Worktime.png" alt=""
+          onclick="this.saveAddFlowTimeTracker()" />
         {@else}
-        <img
-          class="right__header__button-img"
-          src="assets/images/Worktime.png"
-          alt=""
-        />
+        <img class="right__header__button-img" src="assets/images/Worktime.png" alt="" />
         {@/if}
-        <img
-          class="right__header__button-img"
-          src="assets/images/BreaktimeSmall.png"
-          alt=""
-        />
+        <img class="right__header__button-img" src="assets/images/BreaktimeSmall.png" alt="" />
       </div>
       {@else}
       <div class="right__header__button">
-        <img
-          class="right__header__button-img"
-          src="assets/images/InterrupSmall.png"
-          alt=""
-          onclick="this.editFlowTimeTracker('break')"
-        />
-        <img
-          class="right__header__button-img selected"
-          src="assets/images/Worktime.png"
-          alt=""
-          onclick="this.editFlowTimeTracker('work')"
-        />
-        <img
-          class="right__header__button-img"
-          src="assets/images/BreaktimeSmall.png"
-          alt=""
-          onclick="this.editFlowTimeTracker('rest')"
-        />
+        <img class="right__header__button-img" src="assets/images/InterrupSmall.png" alt=""
+          onclick="this.editFlowTimeTracker('break')" />
+        <img class="right__header__button-img selected" src="assets/images/Worktime.png" alt=""
+          onclick="this.editFlowTimeTracker('work')" />
+        <img class="right__header__button-img" src="assets/images/BreaktimeSmall.png" alt=""
+          onclick="this.editFlowTimeTracker('rest')" />
       </div>
       {@/if}
     </div>
@@ -130,36 +82,20 @@
         <div class="content__Reading">
           <div class="content__Reading__h">
             <div class="content__Reading__h__text">Reading</div>
-            <img
-              src="assets/images/Add.png"
-              onclick="this.onOpenAddForm('form2')"
-              class="content__Reading__h__Add"
-            />
-            <img
-              src="assets/images/Openlink.png"
-              class="content__Reading__h__Openlink"
-            />
+            <img src="assets/images/Add.png" onclick="this.onOpenAddForm('form2')" class="content__Reading__h__Add" />
+            <img src="assets/images/Openlink.png" class="content__Reading__h__Openlink" />
           </div>
           {@each readList as item}
-          <div
-            ondblclick="this.change('form2','readList','${item.id}')"
-            oncontextmenu="this.onRightMenus('${item.id}','readList')"
-            class="content__Reading__c"
-          >
+          <div ondblclick="this.change('form2','readList','${item.id}')"
+            oncontextmenu="this.onRightMenus('${item.id}','readList')" class="content__Reading__c">
             <div class="content__Reading__c__h">
               <div class="content__Reading__c__h__text">Group Name</div>
-              <img
-              onclick="this.onOpenAddForm('form2')"
-                src="assets/images/Add.png"
-                class="content__Reading__c__h__Add"
-              />
+              <img onclick="this.onOpenAddForm('form2')" src="assets/images/Add.png"
+                class="content__Reading__c__h__Add" />
               <a href='${item.readLink}' target="_blank">
-                <img
-                src="assets/images/Openlink.png"
-                class="content__Reading__c__h__Openlink"
-              />
+                <img src="assets/images/Openlink.png" class="content__Reading__c__h__Openlink" />
               </a>
-         
+
             </div>
             <div class="content__Reading__c__box">${item.name}</div>
             <div class="content__Reading__c__box">${item.readLink}</div>
@@ -172,32 +108,22 @@
         <div class="content__toDo">
           <div class="content__toDo__h">
             <div class="content__toDo__h__text">To Do</div>
-            <img
-              src="assets/images/Add.png"
-              onclick="this.onOpenAddForm('form1')"
-              class="content__toDo__h__Add"
-            />
+            <img src="assets/images/Add.png" onclick="this.onOpenAddForm('form1')" class="content__toDo__h__Add" />
           </div>
           {@each taskList as item}
-          <div
-            oncontextmenu="this.onRightMenus('${item.id}','taskList')"
+          <div oncontextmenu="this.onRightMenus('${item.id}','taskList')"
             onmousedown="this.dblclick('form1','taskList',event, this, '${item.id}','ProgressListArae')"
-            class="content__toDo__box"
-          >
+            class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
               <img src="assets/images/High.png" alt="" />
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Est. Time:</span
-                ><span>${item.estimateTime}</span>
+                <span class="content__toDo__box__two-item__title">Est. Time:</span><span>${item.estimateTime}</span>
               </div>
               <div class="content__toDo__box__two-item">
-                <span class="content__toDo__box__two-item__title"
-                  >Due Date:</span
-                ><span>${item.dueDate}</span>
+                <span class="content__toDo__box__two-item__title">Due Date:</span><span>${item.dueDate}</span>
               </div>
             </div>
           </div>
@@ -212,47 +138,28 @@
         </div>
         <div class="content__twos__box">
           {@each progressList as item}
-          <div
-            id="card${item.id}"
-            class="content__two__box"
+          <div id="card${item.id}" class="content__two__box"
             onmousedown="this.dblclick('form1','progressList',event, this, '${item.id}','doneListArae')"
-            oncontextmenu="this.onRightMenus('${item.id}','progressList')"
-          >
+            oncontextmenu="this.onRightMenus('${item.id}','progressList')">
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
-            <img
-              class="content__two__box__stop"
-              src="assets/images/Open.png"
-              alt=""
-              onclick="this.cancelSelectTracker()"
-            />
+            <img class="content__two__box__stop" src="assets/images/Open.png" alt=""
+              onclick="this.cancelSelectTracker()" />
             {@else}
-            <img
-              class="content__two__box__stop"
-              src="assets/images/Stop.png"
-              alt=""
-              onclick="this.editTrackerItem('${item.id}')"
-            />
+            <img class="content__two__box__stop" src="assets/images/Stop.png" alt=""
+              onclick="this.editTrackerItem('${item.id}')" />
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              <img
-                class="content__two__boxs__title__lone"
-                src="assets/images/Medium.png"
-                alt=""
-              />
+              <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" />
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
-                <span class="content__two__boxs-item__title">Est. Time:</span
-                ><span class="content__two__boxs-item__value"
-                  >${item|flowEstTime}</span
-                >
+                <span class="content__two__boxs-item__title">Est. Time:</span><span
+                  class="content__two__boxs-item__value">${item|flowEstTime}</span>
               </div>
               <div class="content__two__boxs-item">
-                <span class="content__two__boxs-item__title">Due Date:</span
-                ><span class="content__two__boxs-item__value"
-                  >${item|flowDueDate}</span
-                >
+                <span class="content__two__boxs-item__title">Due Date:</span><span
+                  class="content__two__boxs-item__value">${item|flowDueDate}</span>
               </div>
               {@each item.trackers as tracker}
               <div class="content__two__boxs-item">
@@ -271,7 +178,7 @@
                 <div class="content__two__boxs-items">
                   <img src="assets/images/InterrupSmall.png" alt="" />
                   <span class="content__two__boxs-items__yes">
-                    {@if tracker.break} yes {@else}  <span class="content__two__boxs-items__no">no </span>{@/if}
+                    {@if tracker.break} yes {@else} <span class="content__two__boxs-items__no">no </span>{@/if}
                   </span>
                 </div>
               </div>
@@ -289,46 +196,28 @@
         </div>
         <div class="content__twos__box">
           {@each doneList as item}
-          <div
-            class="content__two__box"
+          <div class="content__two__box"
             onmousedown="this.dblclick('form1','doneList',event, this, '${item.id}','doneListArae')"
-            oncontextmenu="this.onRightMenus('${item.id}','doneList')"
-          >
+            oncontextmenu="this.onRightMenus('${item.id}','doneList')">
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
-            <img
-              class="content__two__box__stop"
-              src="assets/images/Open.png"
-              alt=""
-              onclick="this.cancelSelectTracker()"
-            />
+            <img class="content__two__box__stop" src="assets/images/Open.png" alt=""
+              onclick="this.cancelSelectTracker()" />
             {@else}
-            <img
-              class="content__two__box__stop"
-              src="assets/images/Stop.png"
-              alt=""
-              onclick="this.editTrackerItem('${item.id}')"
-            />
+            <img class="content__two__box__stop" src="assets/images/Stop.png" alt=""
+              onclick="this.editTrackerItem('${item.id}')" />
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              <img
-                class="content__two__boxs__title__lone"
-                src="assets/images/Medium.png"
-                alt=""
-              />
+              <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" />
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
-                <span class="content__two__boxs-item__title">Est. Time:</span
-                ><span class="content__two__boxs-item__value"
-                  >${item|flowEstTime}</span
-                >
+                <span class="content__two__boxs-item__title">Est. Time:</span><span
+                  class="content__two__boxs-item__value">${item|flowEstTime}</span>
               </div>
               <div class="content__two__boxs-item">
-                <span class="content__two__boxs-item__title">Due Date:</span
-                ><span class="content__two__boxs-item__value"
-                  >${item|flowDueDate}</span
-                >
+                <span class="content__two__boxs-item__title">Due Date:</span><span
+                  class="content__two__boxs-item__value">${item|flowDueDate}</span>
               </div>
               {@each item.trackers as tracker}
               <div class="content__two__boxs-item">
@@ -363,44 +252,19 @@
           00:00:00
         </div>
         <div class="footer__console__b">
-          <img
-            class="footer__console__b__start"
-            src="assets/images/Start.png"
-            alt=""
-            onclick="this.timeCountPause()"
-          />
-          <img
-            id="footer__console__b__stop"
-            class="footer__console__b__open"
-            style="display: none"
-            src="assets/images/Open.png"
-            alt=""
-            onclick="this.stopTimer()"
-          />
-          <img
-            id="footer__console__b__open"
-            class="footer__console__b__open"
-            src="assets/images/Stop.png"
-            alt=""
-            onclick="this.startTimer()"
-          />
-          <img
-            class="footer__console__b__Return"
-            src="assets/images/return.png"
-            alt=""
-            onclick="this.timeCountRun()"
-          />
+          <img class="footer__console__b__start" src="assets/images/Start.png" alt="" onclick="this.timeCountPause()" />
+          <img id="footer__console__b__stop" class="footer__console__b__open" style="display: none"
+            src="assets/images/Open.png" alt="" onclick="this.stopTimer()" />
+          <img id="footer__console__b__open" class="footer__console__b__open" src="assets/images/Stop.png" alt=""
+            onclick="this.startTimer()" />
+          <img class="footer__console__b__Return" src="assets/images/return.png" alt="" onclick="this.timeCountRun()" />
         </div>
       </div>
 
       <!-- Music Player > -->
       <div style="display: none">
-        <audio
-          id="myaudio"
-          controls=""
-          ontimeupdate="this.updateProgress(this)"
-          src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"
-        ></audio>
+        <audio id="myaudio" controls="" ontimeupdate="this.updateProgress(this)"
+          src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"></audio>
       </div>
       <div class="footer__display">
         <img src="assets/images/Song.png" class="footer__display__photo" />
@@ -411,19 +275,8 @@
         <div class="footer__display__center">
           <div class="footer__display__center__cons">
             <img src="assets/images/Last.png" alt="" />
-            <img
-              src="assets/images/Play.png"
-              id="stop"
-              style="display: none"
-              onclick="this.closePlay()"
-              alt=""
-            />
-            <img
-              src="assets/images/Stop.png"
-              id="play"
-              onclick="this.play()"
-              alt=""
-            />
+            <img src="assets/images/Play.png" id="stop" style="display: none" onclick="this.closePlay()" alt="" />
+            <img src="assets/images/Stop.png" id="play" onclick="this.play()" alt="" />
             <img src="assets/images/Next.png" alt="" />
           </div>
           <div class="footer__display__center__progressbar">
@@ -447,45 +300,61 @@
   <div class="flex wh100">
     <div class="flex-1 h100" onclick="this.onCancel()"></div>
     <div class="form-panel">
-      <div class="form-title">Add Task</div>
+      <div class="form-title flex"><span>Add Task</span> <span class="close" onclick="this.onCancel()">x</span></div>
       <div class="form-item">
         <label>Task name</label>
-        <input
-          value="${form1.name}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form1', 'name', this.value)"
-        />
+        <input value="${form1.name}" placeholder="Please input"
+          oninput="this.setFormValue('form1', 'name', this.value)" />
       </div>
       <div class="form-item">
         <label>Due date</label>
-        <input
-          value="${form1.dueDate}"
-          placeholder="Please input"
-          type="date"
-          oninput="this.setFormValue('form1', 'dueDate', this.value)"
-        />
+        <input value="${form1.dueDate}" placeholder="Please input" type="date"
+          oninput="this.setFormValue('form1', 'dueDate', this.value)" />
       </div>
-      <div class="form-item">
-        <label>Task priority</label>
-        <input
+      <div class="flex">
+        <div class="form-item">
+          <label>Task priority</label>
+          <!-- <input
           value="${form1.taskPriority}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form1', 'taskPriority', this.value)"
-        />
-      </div>
-      <div class="form-item">
-        <label>Eestimate time</label>
-        <input
-          value="${form1.estimateTime}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form1', 'estimateTime', this.value)"
-        />
+            placeholder="Please input"
+            oninput="this.setFormValue('form1', 'taskPriority', this.value)"
+          /> -->
+          <select onclick="this.setFormValue('form1', 'taskPriority', this.value)" name="" id="">
+
+            <option disabled selected hidden></option>
+            {@if form1.taskPriority == 'Low' }
+            <option selected style="color: lawngreen;" value="Low">
+              Low
+            </option>
+            {@else} <option style="color: lawngreen;" value="Low">
+              Low
+            </option> {@/if}
+            {@if form1.taskPriority == 'Medium'} <option selected style="color: rgb(255, 166, 0);" value="Medium">
+              Medium
+            </option> {@else} <option style="color: rgb(255, 166, 0);" value="Medium">
+              Medium
+            </option> {@/if} {@if form1.taskPriority == 'High'}
+            <option selected style="color: rgb(160, 30, 30);" value="High">
+              High
+            </option> {@else}
+            <option style="color: rgb(160, 30, 30);" value="High">
+              High
+            </option> {@/if}
+          </select>
+        </div>
+        <div class="form-item">
+          <label>Eestimate time</label>
+          <input value="${form1.estimateTime}" placeholder="Please input" type="datetime"
+            oninput="this.setFormValue('form1', 'estimateTime', this.value)" />
+        </div>
       </div>
       <div class="form-btns">
-        <button type="button" class="outline me-4" onclick="this.onCancel()">
+        <!-- <button type="button" class="outline me-4" onclick="this.onCancel()">
           Cancel
         </button>
-        <button type="button" onclick="this.onAddSave('form1')">Save</button>
+        <button type="button" onclick="this.onAddSave('form1')">Save</button> -->
+        <div onclick="this.onAddSave('form1')" class="Save">Save</div>
+        <div onclick="this.onCancel()" class="outline"> Cancel</div>
       </div>
     </div>
   </div>
@@ -494,30 +363,23 @@
   <div class="flex wh100">
     <div class="flex-1 h100" onclick="this.onCancel()"></div>
     <div class="form-panel">
-      <div class="form-title">Add Reading</div>
+      <div class="form-title flex">
+        <span>Add Reading</span> <span class="close" onclick="this.onCancel()">x</span>
+      </div>
       <div class="form-item">
         <label>Name the reading</label>
-        <input
-          value="${form2.name}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form2', 'name', this.value)"
-        />
+        <input value="${form2.name}" placeholder="Please input"
+          oninput="this.setFormValue('form2', 'name', this.value)" />
       </div>
       <div class="form-item">
         <label>Read link</label>
-        <input
-          value="${form2.readLink}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form2', 'readLink', this.value)"
-        />
+        <input value="${form2.readLink}" placeholder="Please input"
+          oninput="this.setFormValue('form2', 'readLink', this.value)" />
       </div>
       <div class="form-item">
         <label>Project name</label>
-        <input
-          value="${form2.projectName}"
-          placeholder="Please input"
-          oninput="this.setFormValue('form2', 'projectName', this.value)"
-        />
+        <input value="${form2.projectName}" placeholder="Please input"
+          oninput="this.setFormValue('form2', 'projectName', this.value)" />
       </div>
       <div class="form-btns">
         <button type="button" class="outline me-4" onclick="this.onCancel()">
