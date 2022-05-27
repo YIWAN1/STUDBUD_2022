@@ -146,6 +146,10 @@ export class App {
   onAddSave(formName) {
     const data = this.data.get();
     const formData = data[formName];
+    if (formName == "form1" && formData.name == "") {
+      alert("please input Task name");
+      return;
+    }
     var isAdd = false;
     if (!formData.id) {
       isAdd = true;
@@ -557,7 +561,7 @@ export class App {
       console.log("++++++++++++++++++", tracker);
       // this.editListItem("progressList", tracker, false, true);
       // this.editListItem("doneList", tracker, true);
-      console.log('domId',domId)
+      console.log("domId", domId);
       if (domId == "doneListArae") {
         this.editListItem("progressList", tracker, false, true);
         this.editListItem("doneList", tracker, true);
@@ -694,7 +698,7 @@ export class App {
     tmel1.innerHTML = formatTime2(ap.currentTime);
     tmel2.innerHTML = formatTime2(ap.duration);
   }
-  caca(val){
-   console.log(val); 
+  caca(val) {
+    console.log(val);
   }
 }

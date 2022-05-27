@@ -116,7 +116,9 @@
             class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
-              <img src="assets/images/High.png" alt="" />
+             {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
+             {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+             {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
@@ -150,7 +152,10 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" />
+              {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
+              <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -208,7 +213,10 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" />
+              {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
+              <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -323,28 +331,28 @@
 
             <option disabled selected hidden></option>
             {@if form1.taskPriority == 'Low' }
-            <option selected style="color: lawngreen;" value="Low">
+            <option selected style="color: #81e26f;" value="Low">
               Low
             </option>
-            {@else} <option style="color: lawngreen;" value="Low">
+            {@else} <option style="color: #81e26f;;" value="Low">
               Low
             </option> {@/if}
-            {@if form1.taskPriority == 'Medium'} <option selected style="color: rgb(255, 166, 0);" value="Medium">
+            {@if form1.taskPriority == 'Medium'} <option selected style="color: #d78822" value="Medium">
               Medium
-            </option> {@else} <option style="color: rgb(255, 166, 0);" value="Medium">
+            </option> {@else} <option style="color: #d78822" value="Medium">
               Medium
             </option> {@/if} {@if form1.taskPriority == 'High'}
-            <option selected style="color: rgb(160, 30, 30);" value="High">
+            <option selected style="color: #8e0304;" value="High">
               High
             </option> {@else}
-            <option style="color: rgb(160, 30, 30);" value="High">
+            <option style="color: #8e0304;" value="High">
               High
             </option> {@/if}
           </select>
         </div>
         <div class="form-item">
           <label>Eestimate time</label>
-          <input value="${form1.estimateTime}" placeholder="Please input" type="datetime"
+          <input type="number" min="0" value="${form1.estimateTime}" placeholder="Eestimate time( in mines) " type="datetime"
             oninput="this.setFormValue('form1', 'estimateTime', this.value)" />
         </div>
       </div>
@@ -382,10 +390,12 @@
           oninput="this.setFormValue('form2', 'projectName', this.value)" />
       </div>
       <div class="form-btns">
-        <button type="button" class="outline me-4" onclick="this.onCancel()">
+        <div onclick="this.onAddSave('form2')" class="Save">Save</div>
+        <div onclick="this.onCancel()" class="outline"> Cancel</div>
+        <!-- <button type="button" class="outline me-4" onclick="this.onCancel()">
           Cancel
         </button>
-        <button type="button" onclick="this.onAddSave('form2')">Save</button>
+        <button type="button" onclick="this.onAddSave('form2')">Save</button> -->
       </div>
     </div>
   </div>

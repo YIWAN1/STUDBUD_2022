@@ -283,6 +283,7 @@ input {
   font-size: 18rem;
   line-height: 22rem;
   color: #0d062d;
+  align-items: center;
 }
 
 .content__toDo__box__one img {
@@ -291,7 +292,9 @@ input {
   margin-top: 2rem;
   margin-left: 3rem;
 }
-
+.content__toDo__box__one img.Medium{
+  height: 4rem;
+}
 .content__toDo__box__two {
   margin-top: 14rem;
 }
