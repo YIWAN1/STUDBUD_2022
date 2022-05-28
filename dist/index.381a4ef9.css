@@ -204,7 +204,7 @@ input {
   height: 100vh;
   box-sizing: border-box;
   background-color: #e5e5e5;
-  padding: 34rem 42rem 57rem 0;
+  padding: 34rem 42rem 57rem;
   display: flex;
   overflow: hidden;
 }
@@ -212,7 +212,6 @@ input {
 .left {
   width: 114rem;
   box-sizing: border-box;
-  min-height: 950rem;
   background: #fff;
   border-radius: 20rem;
   position: relative;
@@ -755,7 +754,7 @@ input {
 
 .footer__display__center__cons img {
   width: 41rem;
-  height: auto;
+  height: 41rem;
 }
 
 .footer__display__center__progressbar {

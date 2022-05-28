@@ -116,9 +116,9 @@
             class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
-             {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
-             {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-             {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
+              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
@@ -152,9 +152,9 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
+              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
               <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
             </div>
             <div class="content__two__boxs">
@@ -213,9 +213,9 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'}  <img src="assets/images/High.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Medium'}    <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Low'}   <img src="assets/images/Low.png" alt="" />{@/if}
+              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
+              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
               <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
             </div>
             <div class="content__two__boxs">
@@ -260,12 +260,15 @@
           00:00:00
         </div>
         <div class="footer__console__b">
-          <img class="footer__console__b__start" src="assets/images/Start.png" alt="" onclick="this.timeCountPause()" />
+          <img class="footer__console__b__start" style="display: none;"  id="timeCountPause" src="assets/images/Start.png" alt=""
+            onclick="this.timeCountPause()" />
+          <img class="footer__console__b__start" id="timeCountRun" src="assets/images/Next.png" alt=""
+            onclick="this.timeCountRun()" />
           <img id="footer__console__b__stop" class="footer__console__b__open" style="display: none"
             src="assets/images/Open.png" alt="" onclick="this.stopTimer()" />
           <img id="footer__console__b__open" class="footer__console__b__open" src="assets/images/Stop.png" alt=""
             onclick="this.startTimer()" />
-          <img class="footer__console__b__Return" src="assets/images/return.png" alt="" onclick="this.timeCountRun()" />
+          <img class="footer__console__b__Return" src="assets/images/return.png" alt="" onclick="this.resetTimer()" />
         </div>
       </div>
 
@@ -352,8 +355,8 @@
         </div>
         <div class="form-item">
           <label>Eestimate time</label>
-          <input type="number" min="0" value="${form1.estimateTime}" placeholder="Eestimate time( in mines) " type="datetime"
-            oninput="this.setFormValue('form1', 'estimateTime', this.value)" />
+          <input type="number" min="0" value="${form1.estimateTime}" placeholder="Eestimate time( in mines) "
+            type="datetime" oninput="this.setFormValue('form1', 'estimateTime', this.value)" />
         </div>
       </div>
       <div class="form-btns">

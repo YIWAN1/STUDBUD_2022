@@ -234,10 +234,15 @@ export class App {
     document.getElementById("footer__console__b__stop").style.display =
       "inline-block";
     document.getElementById("footer__console__b__open").style.display = "none";
+    document.getElementById("footer__console__b__open").style.display = "none";
+   
+    
     this.timeCountRun();
   }
 
   timeCountRun() {
+    document.getElementById("timeCountRun").style.display = "none";
+    document.getElementById("timeCountPause").style.display = "inline-block";
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
@@ -254,10 +259,17 @@ export class App {
   }
 
   timeCountPause() {
+    document.getElementById("timeCountRun").style.display = "inline-block";
+    document.getElementById("timeCountPause").style.display = "none";
+
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
     }
+  }
+
+  resetTimer() {
+    this.timeCount = 0;
   }
 
   stopTimer(istit) {
@@ -272,6 +284,8 @@ export class App {
     document.getElementById("footer__console__b__stop").style.display = "none";
     document.getElementById("footer__console__b__open").style.display =
       "inline-block";
+      document.getElementById("timeCountRun").style.display = "inline-block";
+      document.getElementById("timeCountPause").style.display = "none";
     if (istit) {
       document.getElementById("right__header__title").innerHTML =
         "Write down what are you going there.";

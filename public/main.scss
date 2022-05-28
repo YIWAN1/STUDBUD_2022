@@ -18,7 +18,7 @@ input {
   height: 100vh;
   background-color: #e5e5e5;
   display: flex;
-  padding: 34rem 42rem 57rem 0rem;
+  padding: 34rem 42rem 57rem 42rem;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -30,7 +30,6 @@ input {
   width: 114rem;
   box-sizing: border-box;
   position: relative;
-  min-height: 950rem;
 }
 
 .left__Favicon {
@@ -573,7 +572,7 @@ input {
 
 .footer__display__center__cons img {
   width: 41rem;
-  height: auto;
+  height: 41rem;
 }
 
 .footer__display__center__progressbar {
