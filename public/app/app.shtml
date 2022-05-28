@@ -116,9 +116,9 @@
             class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
-              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
@@ -152,10 +152,9 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
-              <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -202,7 +201,6 @@
         <div class="content__twos__box">
           {@each doneList as item}
           <div class="content__two__box"
-            onmousedown="this.dblclick('form1','doneList',event, this, '${item.id}','doneListArae')"
             oncontextmenu="this.onRightMenus('${item.id}','doneList')">
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
             <img class="content__two__box__stop" src="assets/images/Open.png" alt=""
@@ -213,10 +211,9 @@
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'} <img src="assets/images/High.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Medium'} <img class="Medium" src="assets/images/Medium.png" alt="" />{@/if}
-              {@if item.taskPriority === 'Low'} <img src="assets/images/Low.png" alt="" />{@/if}
-              <!-- <img class="content__two__boxs__title__lone" src="assets/images/Medium.png" alt="" /> -->
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -262,8 +259,7 @@
         <div class="footer__console__b">
           <img class="footer__console__b__start" style="display: none;"  id="timeCountPause" src="assets/images/Start.png" alt=""
             onclick="this.timeCountPause()" />
-          <img class="footer__console__b__start" id="timeCountRun" src="assets/images/Next.png" alt=""
-            onclick="this.timeCountRun()" />
+          <img class="footer__console__b__start" id="timeCountRun" src="assets/images/Next.png" alt="" />
           <img id="footer__console__b__stop" class="footer__console__b__open" style="display: none"
             src="assets/images/Open.png" alt="" onclick="this.stopTimer()" />
           <img id="footer__console__b__open" class="footer__console__b__open" src="assets/images/Stop.png" alt=""
@@ -323,39 +319,34 @@
           oninput="this.setFormValue('form1', 'dueDate', this.value)" />
       </div>
       <div class="flex">
-        <div class="form-item">
+        <div class="form-item flex-2">
           <label>Task priority</label>
-          <!-- <input
-          value="${form1.taskPriority}"
-            placeholder="Please input"
-            oninput="this.setFormValue('form1', 'taskPriority', this.value)"
-          /> -->
-          <select onclick="this.setFormValue('form1', 'taskPriority', this.value)" name="" id="">
+          <select onchange="this.setFormValue('form1', 'taskPriority', this.value)" name="" id="">
 
             <option disabled selected hidden></option>
             {@if form1.taskPriority == 'Low' }
-            <option selected style="color: #81e26f;" value="Low">
+            <option selected style="background-color: #81E26F; color: #fff; font-weight: bold;" value="Low">
               Low
             </option>
-            {@else} <option style="color: #81e26f;;" value="Low">
+            {@else} <option style="background-color: #81E26F; color: #fff;" value="Low">
               Low
             </option> {@/if}
-            {@if form1.taskPriority == 'Medium'} <option selected style="color: #d78822" value="Medium">
+            {@if form1.taskPriority == 'Medium'} <option selected style="background-color: #D78822; color: #fff; font-weight: bold;" value="Medium">
               Medium
-            </option> {@else} <option style="color: #d78822" value="Medium">
+            </option> {@else} <option style="background-color: #D78822; color: #fff;" value="Medium">
               Medium
             </option> {@/if} {@if form1.taskPriority == 'High'}
-            <option selected style="color: #8e0304;" value="High">
+            <option selected style="background-color: #8E0306; color: #fff; font-weight: bold;" value="High">
               High
             </option> {@else}
-            <option style="color: #8e0304;" value="High">
+            <option style="background-color: #8E0306; color: #fff;" value="High">
               High
             </option> {@/if}
           </select>
         </div>
-        <div class="form-item">
-          <label>Eestimate time</label>
-          <input type="number" min="0" value="${form1.estimateTime}" placeholder="Eestimate time( in mines) "
+        <div class="form-item flex-3">
+          <label>Estimated time(in mins)</label>
+          <input type="number" min="0" value="${form1.estimateTime}" placeholder="Estimated time(in mins)"
             type="datetime" oninput="this.setFormValue('form1', 'estimateTime', this.value)" />
         </div>
       </div>

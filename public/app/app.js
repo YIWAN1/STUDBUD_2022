@@ -162,7 +162,10 @@ export class App {
     this.hideFloatLayer();
 
     if (formName == "form1") {
-      this.editListItem("taskList", formData, isAdd);
+      if(!formData.form) {
+        formData.form = 'taskList';
+      }
+      this.editListItem(formData.form, formData, isAdd);
     } else if (formName == "form2") {
       this.editListItem("readList", formData, isAdd);
     }
@@ -369,6 +372,8 @@ export class App {
         items = v;
       }
     });
+
+    items.form = listName;
     console.log(items);
     if (!items) {
       return;

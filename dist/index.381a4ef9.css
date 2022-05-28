@@ -4,6 +4,27 @@
   overflow: hidden;
 }
 
+#app .task-state.task-priority {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  align-items: center;
+  margin: 0 6px;
+  display: flex;
+}
+
+#app .task-state.task-priority span {
+  width: 100%;
+  height: 3px;
+  background-color: #d78822;
+  border-radius: 4px;
+  display: block;
+}
+
+#app .task-state.mt-icon {
+  margin: 0 8px;
+}
+
 #app .left {
   text-align: center;
 }
@@ -63,7 +84,7 @@
 
 #app .form-box .form-panel {
   height: 100%;
-  width: 496rem;
+  width: 546rem;
   text-align: left;
   background-color: #fff;
   border-radius: 10px;
