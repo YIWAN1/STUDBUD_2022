@@ -605,7 +605,7 @@ class App {
             footer
         ];
     }
-    // 页面初始化
+    // Page initialisation
     init() {
         this.data.init({
             readList: [],
@@ -650,7 +650,7 @@ class App {
         });
         this.getData();
     }
-    // 获取初始化后的基本数据
+    // Get the basic data after initialisation
     async getData() {
         const taskList = await _kvdb.kvdb.get("taskList", []);
         const readList = await _kvdb.kvdb.get("readList", []);
@@ -666,22 +666,22 @@ class App {
         this.data.set(data);
         this.updateSelectTrackerStatus();
     }
-    // 重绘页面
+    // Redraw the page
     viewRender() {
         if (!this.containerId) return;
         _bind.observeRender(this, this.containerId, compiledTpl, this.data.get());
     }
-    // 显示 测导航二级菜单
+    // Show Navigation secondary menu
     showMenu(id) {
         this.hideMenu();
         document.getElementById(id).style.display = "block";
     }
-    // 隐藏 测导航二级菜单
+    // Hide Navigation secondary menu
     hideMenu() {
         const els = document.querySelectorAll(".menu-box");
         for (const item of els)item.style.display = "none";
     }
-    // 填入Add Task数据
+    // Fill Add Task data
     setFormValue(formName, key, value) {
         console.log(formName, key, value, arguments);
         const data = this.data.get();
@@ -708,7 +708,7 @@ class App {
         this.data.onlyReset("form2");
         this.viewRender();
     }
-    // 新增 read ，task数据
+    // Add reading , task data
     onAddSave(formName) {
         const data = this.data.get();
         const formData = data[formName];
@@ -760,7 +760,7 @@ class App {
         this.data.onlySet(data);
         _kvdb.kvdb.set(listName, list);
     }
-    // 开始计时
+    // Start Timer
     startTimer() {
         this.timeCount = 0;
         document.getElementById("right__header__title").innerHTML = "What are you working on?";
@@ -769,7 +769,7 @@ class App {
         document.getElementById("footer__console__b__open").style.display = "none";
         this.timeCountRun();
     }
-    // 归零计时
+    // Zero timing
     timeCountRun() {
         if (this.timeCountId) {
             clearTimeout(this.timeCountId);
@@ -788,12 +788,12 @@ class App {
             this.timeCountId = 0;
         }
     }
-    // 重置计时数据
+    // Reset timer data
     resetTimer() {
         console.log("resetTimer");
         this.timeCount = 0;
     }
-    // 停止计时
+    // Stop the timer
     stopTimer(istit) {
         if (this.timeCountId) {
             clearTimeout(this.timeCountId);
@@ -805,7 +805,7 @@ class App {
         document.getElementById("footer__console__b__open").style.display = "inline-block";
         if (istit) document.getElementById("right__header__title").innerHTML = "Write down what are you going there.";
     }
-    // 音频播放。。。
+    // play music
     play() {
         const myaudio = document.getElementById("myaudio");
         const playUrl = this.data.get()["playUrl"];
@@ -820,14 +820,14 @@ class App {
         document.getElementById("play").style.display = "none";
         document.getElementById("stop").style.display = "inline-block";
     }
-    // 关闭音频
+    // stop music
     closePlay() {
         const myaudio = document.getElementById("myaudio");
         myaudio.pause();
         document.getElementById("stop").style.display = "none";
         document.getElementById("play").style.display = "inline-block";
     }
-    // 上一首  下一首
+    // Previous song  Next song
     playNext(type) {
         const playUrl = this.data.get()["playUrl"];
         if (type == "+") {
@@ -837,7 +837,7 @@ class App {
         else this.playIndex = playUrl.length - 1;
         this.play();
     }
-    // 右键时显示删除按钮
+    // Show delete when right-click button
     onRightMenus(id, type) {
         const acac = this;
         event.preventDefault();
@@ -850,7 +850,7 @@ class App {
         m.setAttribute("data-id", id);
         m.setAttribute("data-type", type);
     }
-    // 右键时显示删除按钮
+    // Show delete when right-click
     onMenusDelete(e) {
         // console.log(type, id);
         e = e || window.event;
@@ -867,11 +867,11 @@ class App {
         }
         this.viewRender();
     }
-    // 冒泡时隐藏删除按钮
+    // Hide delete button
     hideRightMenuLayer() {
         document.getElementById("menus").style.display = "none";
     }
-    // 双击页面卡片时 修改/删除
+    // show Edite When double-clicking on a page card
     dblclick(type, listName, e, el, id, domId) {
         var now = new Date().getTime();
         var x = now - this.prev;
@@ -885,7 +885,7 @@ class App {
             this.dragDown(e, el, id, domId);
         }
     }
-    // 修改数据
+    // Edit data
     change(type, listName, id) {
         const data = this.data.get();
         const list = data[listName];
@@ -903,7 +903,7 @@ class App {
         console.log(this.data.get());
         this.onOpenAddForm(type);
     }
-    // 页面头部输入
+    // Page header input
     addFlowTimeTracker() {
         console.log(123);
         this.data.onlySet({
@@ -911,7 +911,7 @@ class App {
         });
         this.cancelSelectTracker();
     }
-    // 与上个方法串联使用
+    // Used in tandem with the previous method
     saveAddFlowTimeTracker() {
         const el = document.getElementById("timeTrackerName");
         const name = el ? el.value : "";
@@ -930,7 +930,7 @@ class App {
         this.editListItem("progressList", data, true);
         this.viewRender();
     }
-    // 与上个方法串联使用
+    // Used in tandem with the previous method
     findOneTrackerItem(id) {
         if (!id) return null;
         var data = this.data.get();
@@ -948,7 +948,7 @@ class App {
         }
         return null;
     }
-    // 停止卡片计时
+    // Stop Card Timer
     editTrackerItem(id) {
         const selectItem = this.findOneTrackerItem(id);
         if (!selectItem) return;
@@ -958,7 +958,7 @@ class App {
         });
         this.updateSelectTrackerStatus();
     }
-    // 与下3个方法组成拖拽整体方法
+    // with the next 3 methods forming the drag and drop
     getSelectTrackerLast() {
         const tracker = this.data.get("selectTrackerItem", null);
         if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -991,7 +991,7 @@ class App {
         _kvdb.kvdb.del("selectTrackerItem");
         this.updateSelectTrackerStatus();
     }
-    // 头部三个按钮的事件
+    // Events for the three buttons in the header
     editFlowTimeTracker(type) {
         const tracker = this.data.get("selectTrackerItem", null);
         if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -1129,7 +1129,7 @@ class App {
         if (ex >= aimBox.offsetLeft && ex <= aimBox.offsetLeft + aimBox.offsetWidth && ey >= aimBox.offsetTop && ey <= aimBox.offsetTop + aimBox.offsetHeight) return true;
         return false;
     }
-    // Audio player progress
+    // Music player progress
     updateProgress(ap) {
         const el = document.getElementById("audioCur");
         const tmel1 = document.getElementById("audioCurTime");
@@ -1141,7 +1141,7 @@ class App {
         tmel1.innerHTML = _utils.formatTime2(ap.currentTime);
         tmel2.innerHTML = _utils.formatTime2(ap.duration);
     }
-    // read 打开所有链接
+    //  Open all reading links
     openlink() {
         var els = document.querySelectorAll("#readList a");
         console.log(els);
@@ -1718,7 +1718,7 @@ class Footer {
     constructor(id){
         this.data = new _bind.BindObject(this);
         this.containerId = id;
-        // 全局对象
+        // Global objects
         _bind.observeInsert(this);
     }
     init() {
@@ -1738,7 +1738,7 @@ class Footer {
 }
 
 },{"../../../js/bind":"e0Agw","juicer":"lkMaW","./footer.scss":"jLukM","./footer.shtml":"ehbZx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jLukM":[function() {},{}],"ehbZx":[function(require,module,exports) {
-module.exports = "<div class=\"view-footer\">\n  abc ABC\n\n  <span>${msg}</span>\n  {@each [1, 2] as item}\n  <i>${item},</i>\n  {@/each}\n  <button type=\"button\" onclick=\"this.printInfo('${id}')\">点击执行</button>\n</div>\n";
+module.exports = "<div class=\"view-footer\">\n  abc ABC\n\n  <span>${msg}</span>\n  {@each [1, 2] as item}\n  <i>${item},</i>\n  {@/each}\n  <button type=\"button\" onclick=\"this.printInfo('${id}')\">Click to execute</button>\n</div>\n";
 
 },{}],"815IK":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -1750,7 +1750,7 @@ class KVDB {
     name = "com.default.app";
     version = "v0..1.0";
     constructor(){}
-    /********** 存储 *********** */ init(name) {
+    /********** Storage *********** */ init(name) {
         if (!name) name = this.name;
         _localforage.config({
             name: name,

@@ -6,7 +6,7 @@ class KVDB {
 
   constructor() {}
 
-  /********** 存储 *********** */
+  /********** Storage *********** */
   init(name) {
     if (!name) {
       name = this.name;

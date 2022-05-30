@@ -5,5 +5,5 @@
   {@each [1, 2] as item}
   <i>${item},</i>
   {@/each}
-  <button type="button" onclick="this.printInfo('${id}')">点击执行</button>
+  <button type="button" onclick="this.printInfo('${id}')">Click to execute</button>
 </div>

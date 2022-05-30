@@ -16,7 +16,7 @@ import {
   juicer.set({
     "tag::operationOpen": "{@", // each/for/if
     "tag::operationClose": "}",
-    "tag::interpolateOpen": "${", // 变量值
+    "tag::interpolateOpen": "${", // Variable value
     "tag::interpolateClose": "}",
     "tag::noneencodeOpen": "$${",
     "tag::noneencodeClose": "}",

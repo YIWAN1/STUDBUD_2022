@@ -15,7 +15,7 @@ export class Footer {
     this.data = new BindObject(this);
     this.containerId = id;
 
-    // 全局对象
+    // Global objects
     observeInsert(this);
   }
 

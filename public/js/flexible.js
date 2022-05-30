@@ -10,7 +10,7 @@
     var flexible = lib.flexible || (lib.flexible = {});
 
     if (metaEl) {
-        console.warn('将根据已有的meta标签来设置缩放比例');
+        console.warn('The scaling will be set according to the existing meta tags');
         var match = metaEl.getAttribute('content').match(/initial\-scale=([\d\.]+)/);
         if (match) {
             scale = parseFloat(match[1]);
@@ -37,7 +37,7 @@
         var isIPhone = win.navigator.appVersion.match(/iphone/gi);
         var devicePixelRatio = win.devicePixelRatio;
         if (isIPhone) {
-            // iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
+            // Under iOS, for screens 2 and 3, use the 2x solution, for the rest use the 1x solution
             if (devicePixelRatio >= 3 && (!dpr || dpr >= 3)) {
                 dpr = 3;
             } else if (devicePixelRatio >= 2 && (!dpr || dpr >= 2)){
@@ -46,7 +46,7 @@
                 dpr = 1;
             }
         } else {
-            // 其他设备下，仍旧使用1倍的方案
+            // Under other devices, the 1x solution is still used
             dpr = 1;
         }
         scale = 1 / dpr;

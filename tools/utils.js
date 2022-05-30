@@ -15,7 +15,7 @@ function mkdirsSync(dir) {
 }
 
 function copyDir(src, dst) {
-  let paths = fs.readdirSync(src); //同步读取当前目录
+  let paths = fs.readdirSync(src); //Synchronous reading of the current directory
   paths.forEach(function (path) {
     var _src = src + "/" + path;
     var _dst = dst + "/" + path;
