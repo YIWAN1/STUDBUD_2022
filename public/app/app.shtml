@@ -79,16 +79,16 @@
     <div class="content">
       <div class="content__one">
         <!-- Reading——Reading List Creator -->
-        <div class="content__Reading">
+        <div id="readList" class="content__Reading">
           <div class="content__Reading__h">
             <div class="content__Reading__h__text">Reading</div>
             <img src="assets/images/Add.png" onclick="this.onOpenAddForm('form2')" class="content__Reading__h__Add" />
-            <img src="assets/images/Openlink.png" class="content__Reading__h__Openlink" />
+            <img src="assets/images/Openlink.png" onclick="this.openlink()" class="content__Reading__h__Openlink" />
           </div>
           {@each readList as item}
           <div ondblclick="this.change('form2','readList','${item.id}')"
             oncontextmenu="this.onRightMenus('${item.id}','readList')" class="content__Reading__c">
-            <div class="content__Reading__c__h">
+            <!-- <div class="content__Reading__c__h">
               <div class="content__Reading__c__h__text">${item.projectName}</div>
               <img onclick="this.onOpenAddForm('form2')" src="assets/images/Add.png"
                 class="content__Reading__c__h__Add" />
@@ -96,7 +96,7 @@
                 <img src="assets/images/Openlink.png" class="content__Reading__c__h__Openlink" />
               </a>
 
-            </div>
+            </div> -->
             <!-- <div class="content__Reading__c__box">${item.name}</div> -->
             <div class="content__Reading__c__box"><a target="_blank" href="${item.readLink}">${item.name}</a></div>
             <!-- <div class="content__Reading__c__box">${item.projectName}</div> -->
@@ -373,15 +373,15 @@
           oninput="this.setFormValue('form2', 'name', this.value)" />
       </div>
       <div class="form-item">
-        <label>Read link</label>
+        <label>Reading link</label>
         <input value="${form2.readLink}" placeholder="Please input"
           oninput="this.setFormValue('form2', 'readLink', this.value)" />
       </div>
-      <div class="form-item">
+      <!-- <div class="form-item">
         <label>Project name</label>
         <input value="${form2.projectName}" placeholder="Please input"
           oninput="this.setFormValue('form2', 'projectName', this.value)" />
-      </div>
+      </div> -->
       <div class="form-btns">
         <div onclick="this.onAddSave('form2')" class="Save">Save</div>
         <div onclick="this.onCancel()" class="outline"> Cancel</div>

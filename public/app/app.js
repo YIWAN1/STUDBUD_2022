@@ -734,4 +734,15 @@ export class App {
   caca(val) {
     console.log(val);
   }
+  openlink() {
+    var els = document.querySelectorAll('#readList a')
+    console.log(els);
+    for (let i = 0; i < els.length; i++) {
+      // v.onclick()
+      let url = els[i].href
+      setTimeout(() => {
+        window.open(url, '_blank')
+      }, 500);
+    }
+  }
 }
