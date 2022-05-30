@@ -746,15 +746,18 @@ input {
 
 .footer__display__info {
   height: 100%;
+  width: 90rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   margin-left: 4rem;
   margin-right: 24rem;
   position: relative;
+  overflow: hidden;
 }
 
 .footer__display__info__title {
-  text-align: center;
   color: #000;
-  margin-top: 40rem;
+  margin-top: 30rem;
   font-family: Inter;
   font-size: 10rem;
   font-style: normal;

@@ -543,6 +543,13 @@ input {
   position: relative;
   margin-left: 4rem;
   margin-right: 24rem;
+  width: 90rem;
+  overflow: hidden;
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  -o-text-overflow:ellipsis;
 }
 
 .footer__display__info__title {
@@ -550,9 +557,9 @@ input {
   font-style: normal;
   font-weight: 600;
   font-size: 10rem;
-  text-align: center;
+  // text-align: center;
   color: #000000;
-  margin-top: 40rem;
+  margin-top: 30rem;
 }
 
 .footer__display__info__singer {

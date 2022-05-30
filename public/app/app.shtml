@@ -270,33 +270,33 @@
       <!-- Music Player > -->
       <div style="display: none">
         <audio id="myaudio" controls="" ontimeupdate="this.updateProgress(this)"
-          src="../assets/mp3/Joji-BENEE-Afterthought(1).mp3"></audio>
+         ></audio>
       </div>
       <div class="footer__display">
-        <img src="assets/images/Song.png" class="footer__display__photo" />
+        <img src="${playUrl[0].imgUrl}" id="musicImg" class="footer__display__photo" />
         <div class="footer__display__info">
-          <div class="footer__display__info__title">Aferthought</div>
-          <div class="footer__display__info__singer">Joji</div>
+          <div class="footer__display__info__title" id="musicName">${playUrl[0].name}</div>
+          <div class="footer__display__info__singer" id="singer">${playUrl[0].singer}</div>
         </div>
         <div class="footer__display__center">
           <div class="footer__display__center__cons">
-            <img src="assets/images/Last.png" alt="" />
+            <img src="assets/images/Last.png" id="previous" onclick="this.playNext('-')" alt="" />
             <img src="assets/images/Play.png" id="stop" style="display: none" onclick="this.closePlay()" alt="" />
             <img src="assets/images/Stop.png" id="play" onclick="this.play()" alt="" />
-            <img src="assets/images/Next.png" alt="" />
+            <img src="assets/images/Next.png" id="playNext" onclick="this.playNext('+')" alt=""  onclick="this.play()" />
           </div>
           <div class="footer__display__center__progressbar">
             <span id="audioCurTime">00:00</span>
             <span class="lone">
               <span class="cur" id="audioCur"></span>
             </span>
-            <span id="audioTotalTime">00:09</span>
+            <span id="audioTotalTime">00:00</span>
           </div>
         </div>
         <div class="footer__display__right">
-          <img src="assets/images/Order.png" alt="" />
+          <!-- <img src="assets/images/Order.png" alt="" />
           <img src="assets/images/Playlist.png" alt="" />
-          <img src="assets/images/Volume.png" alt="" />
+          <img src="assets/images/Volume.png" alt="" /> -->
         </div>
       </div>
     </div>

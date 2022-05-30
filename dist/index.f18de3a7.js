@@ -583,6 +583,7 @@ function sysDragUp(e) {
     if (_dragMaster) _dragMaster.dragUp(e);
 }
 class App {
+    playUrl = [];
     //
     components = [];
     componentFooter;
@@ -593,6 +594,7 @@ class App {
     dEle = null;
     timeCount = 0;
     trackerTimer = 0;
+    playIndex = 0;
     constructor(id){
         this.data = new _bind.BindObject(this);
         this.containerId = id;
@@ -603,6 +605,7 @@ class App {
             footer
         ];
     }
+    // 页面初始化
     init() {
         this.data.init({
             readList: [],
@@ -623,10 +626,31 @@ class App {
                 name: "",
                 readLink: "",
                 projectName: ""
-            }
+            },
+            playUrl: [
+                {
+                    url: "../assets/mp3/Joji-BENEE-Afterthought(1).mp3",
+                    name: "Afterthought",
+                    imgUrl: "../assets/mp3/Cover.png",
+                    singer: "Joji"
+                },
+                {
+                    url: "../assets/mp3/Harry Styles - As It Was.mp3",
+                    name: "As It Was",
+                    imgUrl: "../assets/mp3/Cover1.JPG",
+                    singer: "Harry Styles"
+                },
+                {
+                    url: "../assets/mp3/ØZI、9M88 - B.O..mp3",
+                    name: "B.O.",
+                    imgUrl: "../assets/mp3/Cover2.JPG",
+                    singer: "ØZI、9M88"
+                }, 
+            ]
         });
         this.getData();
     }
+    // 获取初始化后的基本数据
     async getData() {
         const taskList = await _kvdb.kvdb.get("taskList", []);
         const readList = await _kvdb.kvdb.get("readList", []);
@@ -642,18 +666,22 @@ class App {
         this.data.set(data);
         this.updateSelectTrackerStatus();
     }
+    // 重绘页面
     viewRender() {
         if (!this.containerId) return;
         _bind.observeRender(this, this.containerId, compiledTpl, this.data.get());
     }
+    // 显示 测导航二级菜单
     showMenu(id) {
         this.hideMenu();
         document.getElementById(id).style.display = "block";
     }
+    // 隐藏 测导航二级菜单
     hideMenu() {
         const els = document.querySelectorAll(".menu-box");
         for (const item of els)item.style.display = "none";
     }
+    // 填入Add Task数据
     setFormValue(formName, key, value) {
         console.log(formName, key, value, arguments);
         const data = this.data.get();
@@ -673,12 +701,14 @@ class App {
         f1.style.display = "none";
         f2.style.display = "none";
     }
+    // Cancel form panel
     onCancel() {
         this.hideFloatLayer();
         this.data.onlyReset("form1");
         this.data.onlyReset("form2");
         this.viewRender();
     }
+    // 新增 read ，task数据
     onAddSave(formName) {
         const data = this.data.get();
         const formData = data[formName];
@@ -696,7 +726,7 @@ class App {
         }
         this.hideFloatLayer();
         if (formName == "form1") {
-            if (!formData.form) formData.form = 'taskList';
+            if (!formData.form) formData.form = "taskList";
             this.editListItem(formData.form, formData, isAdd);
         } else if (formName == "form2") this.editListItem("readList", formData, isAdd);
         this.data.onlyReset("form1");
@@ -730,6 +760,7 @@ class App {
         this.data.onlySet(data);
         _kvdb.kvdb.set(listName, list);
     }
+    // 开始计时
     startTimer() {
         this.timeCount = 0;
         document.getElementById("right__header__title").innerHTML = "What are you working on?";
@@ -738,6 +769,7 @@ class App {
         document.getElementById("footer__console__b__open").style.display = "none";
         this.timeCountRun();
     }
+    // 归零计时
     timeCountRun() {
         if (this.timeCountId) {
             clearTimeout(this.timeCountId);
@@ -749,16 +781,19 @@ class App {
             this.timeCountRun();
         }, 1000);
     }
+    // 
     timeCountPause() {
         if (this.timeCountId) {
             clearTimeout(this.timeCountId);
             this.timeCountId = 0;
         }
     }
+    // 重置计时数据
     resetTimer() {
-        console.log('resetTimer');
+        console.log("resetTimer");
         this.timeCount = 0;
     }
+    // 停止计时
     stopTimer(istit) {
         if (this.timeCountId) {
             clearTimeout(this.timeCountId);
@@ -773,16 +808,36 @@ class App {
     // 音频播放。。。
     play() {
         const myaudio = document.getElementById("myaudio");
+        const playUrl = this.data.get()["playUrl"];
+        let musicName = document.getElementById("musicName");
+        let musicImg = document.getElementById("musicImg");
+        let singer = document.getElementById("singer");
+        musicName.innerHTML = playUrl[this.playIndex].name;
+        singer.innerHTML = playUrl[this.playIndex].singer;
+        myaudio.setAttribute("src", playUrl[this.playIndex].url);
+        musicImg.setAttribute("src", playUrl[this.playIndex].imgUrl);
         myaudio.play();
         document.getElementById("play").style.display = "none";
         document.getElementById("stop").style.display = "inline-block";
     }
+    // 关闭音频
     closePlay() {
         const myaudio = document.getElementById("myaudio");
         myaudio.pause();
         document.getElementById("stop").style.display = "none";
         document.getElementById("play").style.display = "inline-block";
     }
+    // 上一首  下一首
+    playNext(type) {
+        const playUrl = this.data.get()["playUrl"];
+        if (type == "+") {
+            if (this.playIndex < playUrl.length - 1) this.playIndex++;
+            else this.playIndex = 0;
+        } else if (this.playIndex > 0) this.playIndex--;
+        else this.playIndex = playUrl.length - 1;
+        this.play();
+    }
+    // 右键时显示删除按钮
     onRightMenus(id, type) {
         const acac = this;
         event.preventDefault();
@@ -795,6 +850,7 @@ class App {
         m.setAttribute("data-id", id);
         m.setAttribute("data-type", type);
     }
+    // 右键时显示删除按钮
     onMenusDelete(e) {
         // console.log(type, id);
         e = e || window.event;
@@ -811,9 +867,11 @@ class App {
         }
         this.viewRender();
     }
+    // 冒泡时隐藏删除按钮
     hideRightMenuLayer() {
         document.getElementById("menus").style.display = "none";
     }
+    // 双击页面卡片时 修改/删除
     dblclick(type, listName, e, el, id, domId) {
         var now = new Date().getTime();
         var x = now - this.prev;
@@ -827,6 +885,7 @@ class App {
             this.dragDown(e, el, id, domId);
         }
     }
+    // 修改数据
     change(type, listName, id) {
         const data = this.data.get();
         const list = data[listName];
@@ -844,6 +903,7 @@ class App {
         console.log(this.data.get());
         this.onOpenAddForm(type);
     }
+    // 页面头部输入
     addFlowTimeTracker() {
         console.log(123);
         this.data.onlySet({
@@ -851,6 +911,7 @@ class App {
         });
         this.cancelSelectTracker();
     }
+    // 与上个方法串联使用
     saveAddFlowTimeTracker() {
         const el = document.getElementById("timeTrackerName");
         const name = el ? el.value : "";
@@ -869,6 +930,7 @@ class App {
         this.editListItem("progressList", data, true);
         this.viewRender();
     }
+    // 与上个方法串联使用
     findOneTrackerItem(id) {
         if (!id) return null;
         var data = this.data.get();
@@ -886,6 +948,7 @@ class App {
         }
         return null;
     }
+    // 停止卡片计时
     editTrackerItem(id) {
         const selectItem = this.findOneTrackerItem(id);
         if (!selectItem) return;
@@ -895,6 +958,7 @@ class App {
         });
         this.updateSelectTrackerStatus();
     }
+    // 与下3个方法组成拖拽整体方法
     getSelectTrackerLast() {
         const tracker = this.data.get("selectTrackerItem", null);
         if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -927,6 +991,7 @@ class App {
         _kvdb.kvdb.del("selectTrackerItem");
         this.updateSelectTrackerStatus();
     }
+    // 头部三个按钮的事件
     editFlowTimeTracker(type) {
         const tracker = this.data.get("selectTrackerItem", null);
         if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -1076,17 +1141,15 @@ class App {
         tmel1.innerHTML = _utils.formatTime2(ap.currentTime);
         tmel2.innerHTML = _utils.formatTime2(ap.duration);
     }
-    caca(val) {
-        console.log(val);
-    }
+    // read 打开所有链接
     openlink() {
-        var els = document.querySelectorAll('#readList a');
+        var els = document.querySelectorAll("#readList a");
         console.log(els);
         for(let i = 0; i < els.length; i++){
             // v.onclick()
             let url = els[i].href;
             setTimeout(()=>{
-                window.open(url, '_blank');
+                window.open(url, "_blank");
             }, 500);
         }
     }
@@ -4087,7 +4150,7 @@ class FlowTimeTrackerItem {
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"h1n6Q":[function(require,module,exports) {
-module.exports = "<div class=\"box\" onclick=\"this.hideRightMenuLayer()\">\r\n  <!-- Left Bar -->\r\n  <div class=\"left\">\r\n    <div class=\"left__Favicon\">\r\n      <img src=\"assets/images/Favicon.png\" alt=\"\" />\r\n    </div>\r\n    <div class=\"left__box\">\r\n      <div class=\"menu-item\" onmouseover=\"this.showMenu('menuAdd')\" onmouseleave=\"this.hideMenu()\">\r\n        <div class=\"menu-tag left__box-item Quickadd\">\r\n          <img src=\"assets/images/Quickadd.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuAdd\" class=\"menu-box menu-add\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Add</div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form1')\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon reorder\"></i>Task</span>\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form2')\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon chrome_reader_mode\"></i>Reading</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"menu-item\" onmouseover=\"this.showMenu('menuTimer')\" onmouseleave=\"this.hideMenu()\">\r\n        <div class=\"menu-tag left__box-item Quicktimer\">\r\n          <img src=\"assets/images/Quicktimer.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuTimer\" class=\"menu-box menu-timer\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Timer</div>\r\n          <div class=\"li li-item\" onclick=\"this.startTimer()\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon timer\"></i>Startwatch Timer</span>\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.addFlowTimeTracker()\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon timelapse\"></i>Flow Time Tracker</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"left__user\">\r\n      <img src=\"assets/images/user.png\" alt=\"\" />\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"right\">\r\n    <!-- Top Flow Time Tracker -->\r\n    <div class=\"right__header\">\r\n      <div id=\"right__header__title\" class=\"right__header__title\">\r\n        {@if editTimeTracker}\r\n        <input id=\"timeTrackerName\" type=\"text\" class=\"flow-time-name\"\r\n          placeholder=\"Please input the task name you want to track time\" />\r\n        {@else} {@if !!selectTrackerItem}\r\n        <span>${selectTrackerItem.name}</span>\r\n        {@else}\r\n        <span onclick=\"this.addFlowTimeTracker()\">What are you working on?</span> {@/if} {@/if}\r\n      </div>\r\n      <!-- <div id=\"Tracker\" style=\"display: none;\" class=\"right__header__title\">Write down what are you going there.</div> -->\r\n      <div id=\"trackerTimer\" class=\"right__header__date\">00:00:00</div>\r\n      {@if !selectTrackerItem}\r\n      <div class=\"right__header__button\">\r\n        <img class=\"right__header__button-img\" src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n        {@if editTimeTracker}\r\n        <img class=\"right__header__button-img selected\" src=\"assets/images/Worktime.png\" alt=\"\"\r\n          onclick=\"this.saveAddFlowTimeTracker()\" />\r\n        {@else}\r\n        <img class=\"right__header__button-img\" src=\"assets/images/Worktime.png\" alt=\"\" />\r\n        {@/if}\r\n        <img class=\"right__header__button-img\" src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n      </div>\r\n      {@else}\r\n      <div class=\"right__header__button\">\r\n        <img class=\"right__header__button-img\" src=\"assets/images/InterrupSmall.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('break')\" />\r\n        <img class=\"right__header__button-img selected\" src=\"assets/images/Worktime.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('work')\" />\r\n        <img class=\"right__header__button-img\" src=\"assets/images/BreaktimeSmall.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('rest')\" />\r\n      </div>\r\n      {@/if}\r\n    </div>\r\n\r\n    <div class=\"content\">\r\n      <div class=\"content__one\">\r\n        <!-- Reading——Reading List Creator -->\r\n        <div id=\"readList\" class=\"content__Reading\">\r\n          <div class=\"content__Reading__h\">\r\n            <div class=\"content__Reading__h__text\">Reading</div>\r\n            <img src=\"assets/images/Add.png\" onclick=\"this.onOpenAddForm('form2')\" class=\"content__Reading__h__Add\" />\r\n            <img src=\"assets/images/Openlink.png\" onclick=\"this.openlink()\" class=\"content__Reading__h__Openlink\" />\r\n          </div>\r\n          {@each readList as item}\r\n          <div ondblclick=\"this.change('form2','readList','${item.id}')\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','readList')\" class=\"content__Reading__c\">\r\n            <!-- <div class=\"content__Reading__c__h\">\r\n              <div class=\"content__Reading__c__h__text\">${item.projectName}</div>\r\n              <img onclick=\"this.onOpenAddForm('form2')\" src=\"assets/images/Add.png\"\r\n                class=\"content__Reading__c__h__Add\" />\r\n              <a href='${item.readLink}' target=\"_blank\">\r\n                <img src=\"assets/images/Openlink.png\" class=\"content__Reading__c__h__Openlink\" />\r\n              </a>\r\n\r\n            </div> -->\r\n            <!-- <div class=\"content__Reading__c__box\">${item.name}</div> -->\r\n            <div class=\"content__Reading__c__box\"><a target=\"_blank\" href=\"${item.readLink}\">${item.name}</a></div>\r\n            <!-- <div class=\"content__Reading__c__box\">${item.projectName}</div> -->\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n\r\n        <!-- To Do——Task List  -->\r\n        <div class=\"content__toDo\">\r\n          <div class=\"content__toDo__h\">\r\n            <div class=\"content__toDo__h__text\">To Do</div>\r\n            <img src=\"assets/images/Add.png\" onclick=\"this.onOpenAddForm('form1')\" class=\"content__toDo__h__Add\" />\r\n          </div>\r\n          {@each taskList as item}\r\n          <div oncontextmenu=\"this.onRightMenus('${item.id}','taskList')\"\r\n            onmousedown=\"this.dblclick('form1','taskList',event, this, '${item.id}','ProgressListArae')\"\r\n            class=\"content__toDo__box\">\r\n            <div class=\"content__toDo__box__one\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__toDo__box__two\">\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\">Est. Time:</span><span>${item.estimateTime}</span>\r\n              </div>\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\">Due Date:</span><span>${item.dueDate}</span>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- On Progress -->\r\n      <div id=\"ProgressListArae\" class=\"content__two\">\r\n        <div class=\"content__two__h\">\r\n          <div class=\"content__two__h__text\">On Progress</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each progressList as item}\r\n          <div id=\"card${item.id}\" class=\"content__two__box\"\r\n            onmousedown=\"this.dblclick('form1','progressList',event, this, '${item.id}','doneListArae')\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','progressList')\">\r\n            {@if selectTrackerItem && item.id == selectTrackerItem.id}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Open.png\" alt=\"\"\r\n              onclick=\"this.cancelSelectTracker()\" />\r\n            {@else}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Stop.png\" alt=\"\"\r\n              onclick=\"this.editTrackerItem('${item.id}')\" />\r\n            {@/if}\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemRestTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">\r\n                    {@if tracker.break} yes {@else} <span class=\"content__two__boxs-items__no\">no </span>{@/if}\r\n                  </span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Done-->\r\n      <div id=\"doneListArae\" class=\"content__two content__three\">\r\n        <div class=\"content__three__h\">\r\n          <div class=\"content__three__h__text\">Done</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each doneList as item}\r\n          <div class=\"content__two__box\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','doneList')\">\r\n            {@if selectTrackerItem && item.id == selectTrackerItem.id}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Open.png\" alt=\"\"\r\n              onclick=\"this.cancelSelectTracker()\" />\r\n            {@else}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Stop.png\" alt=\"\"\r\n              onclick=\"this.editTrackerItem('${item.id}')\" />\r\n            {@/if}\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemRestTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"footer\">\r\n      <!--  Stopwatch Timer > -->\r\n      <div class=\"footer__console\">\r\n        <div id=\"footer__console__time\" class=\"footer__console__time\">\r\n          00:00:00\r\n        </div>\r\n        <div class=\"footer__console__b\">\r\n          <img class=\"footer__console__b__start\"  id=\"timeCountPause\" src=\"assets/images/Start.png\" alt=\"\"\r\n            onclick=\"this.timeCountPause()\" />\r\n          <img id=\"footer__console__b__stop\" class=\"footer__console__b__open\" style=\"display: none\"\r\n            src=\"assets/images/Open.png\" alt=\"\" onclick=\"this.stopTimer()\" />\r\n          <img id=\"footer__console__b__open\" class=\"footer__console__b__open\" src=\"assets/images/Stop.png\" alt=\"\"\r\n            onclick=\"this.startTimer()\" />\r\n          <img class=\"footer__console__b__Return\" src=\"assets/images/return.png\" alt=\"\" onclick=\"this.resetTimer()\" />\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Music Player > -->\r\n      <div style=\"display: none\">\r\n        <audio id=\"myaudio\" controls=\"\" ontimeupdate=\"this.updateProgress(this)\"\r\n          src=\"../assets/mp3/Joji-BENEE-Afterthought(1).mp3\"></audio>\r\n      </div>\r\n      <div class=\"footer__display\">\r\n        <img src=\"assets/images/Song.png\" class=\"footer__display__photo\" />\r\n        <div class=\"footer__display__info\">\r\n          <div class=\"footer__display__info__title\">Aferthought</div>\r\n          <div class=\"footer__display__info__singer\">Joji</div>\r\n        </div>\r\n        <div class=\"footer__display__center\">\r\n          <div class=\"footer__display__center__cons\">\r\n            <img src=\"assets/images/Last.png\" alt=\"\" />\r\n            <img src=\"assets/images/Play.png\" id=\"stop\" style=\"display: none\" onclick=\"this.closePlay()\" alt=\"\" />\r\n            <img src=\"assets/images/Stop.png\" id=\"play\" onclick=\"this.play()\" alt=\"\" />\r\n            <img src=\"assets/images/Next.png\" alt=\"\" />\r\n          </div>\r\n          <div class=\"footer__display__center__progressbar\">\r\n            <span id=\"audioCurTime\">00:00</span>\r\n            <span class=\"lone\">\r\n              <span class=\"cur\" id=\"audioCur\"></span>\r\n            </span>\r\n            <span id=\"audioTotalTime\">00:09</span>\r\n          </div>\r\n        </div>\r\n        <div class=\"footer__display__right\">\r\n          <img src=\"assets/images/Order.png\" alt=\"\" />\r\n          <img src=\"assets/images/Playlist.png\" alt=\"\" />\r\n          <img src=\"assets/images/Volume.png\" alt=\"\" />\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form1\" class=\"form-box wh100\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title flex\"><span>Add Task</span> <span class=\"close\" onclick=\"this.onCancel()\">x</span></div>\r\n      <div class=\"form-item\">\r\n        <label>Task name</label>\r\n        <input value=\"${form1.name}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'name', this.value)\" />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Due date</label>\r\n        <input value=\"${form1.dueDate}\" placeholder=\"Please input\" type=\"date\"\r\n          oninput=\"this.setFormValue('form1', 'dueDate', this.value)\" />\r\n      </div>\r\n      <div class=\"flex\">\r\n        <div class=\"form-item flex-2\">\r\n          <label>Task priority</label>\r\n          <select onchange=\"this.setFormValue('form1', 'taskPriority', this.value)\" name=\"\" id=\"\">\r\n\r\n            <option disabled selected hidden></option>\r\n            {@if form1.taskPriority == 'Low' }\r\n            <option selected style=\"background-color: #81E26F; color: #fff; font-weight: bold;\" value=\"Low\">\r\n              Low\r\n            </option>\r\n            {@else} <option style=\"background-color: #81E26F; color: #fff;\" value=\"Low\">\r\n              Low\r\n            </option> {@/if}\r\n            {@if form1.taskPriority == 'Medium'} <option selected style=\"background-color: #D78822; color: #fff; font-weight: bold;\" value=\"Medium\">\r\n              Medium\r\n            </option> {@else} <option style=\"background-color: #D78822; color: #fff;\" value=\"Medium\">\r\n              Medium\r\n            </option> {@/if} {@if form1.taskPriority == 'High'}\r\n            <option selected style=\"background-color: #8E0306; color: #fff; font-weight: bold;\" value=\"High\">\r\n              High\r\n            </option> {@else}\r\n            <option style=\"background-color: #8E0306; color: #fff;\" value=\"High\">\r\n              High\r\n            </option> {@/if}\r\n          </select>\r\n        </div>\r\n        <div class=\"form-item flex-3\">\r\n          <label>Estimated time(in mins)</label>\r\n          <input type=\"number\" min=\"0\" value=\"${form1.estimateTime}\" placeholder=\"Estimated time(in mins)\"\r\n            type=\"datetime\" oninput=\"this.setFormValue('form1', 'estimateTime', this.value)\" />\r\n        </div>\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <!-- <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form1')\">Save</button> -->\r\n        <div onclick=\"this.onAddSave('form1')\" class=\"Save\">Save</div>\r\n        <div onclick=\"this.onCancel()\" class=\"outline\"> Cancel</div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form2\" class=\"form-box wh100 flex\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title flex\">\r\n        <span>Add Reading</span> <span class=\"close\" onclick=\"this.onCancel()\">x</span>\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Name the reading</label>\r\n        <input value=\"${form2.name}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'name', this.value)\" />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Reading link</label>\r\n        <input value=\"${form2.readLink}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'readLink', this.value)\" />\r\n      </div>\r\n      <!-- <div class=\"form-item\">\r\n        <label>Project name</label>\r\n        <input value=\"${form2.projectName}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'projectName', this.value)\" />\r\n      </div> -->\r\n      <div class=\"form-btns\">\r\n        <div onclick=\"this.onAddSave('form2')\" class=\"Save\">Save</div>\r\n        <div onclick=\"this.onCancel()\" class=\"outline\"> Cancel</div>\r\n        <!-- <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form2')\">Save</button> -->\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ul id=\"menus\">\r\n  <li id=\"menusDelete\" onclick=\"this.onMenusDelete(event)\">Delete</li>\r\n</ul>";
+module.exports = "<div class=\"box\" onclick=\"this.hideRightMenuLayer()\">\r\n  <!-- Left Bar -->\r\n  <div class=\"left\">\r\n    <div class=\"left__Favicon\">\r\n      <img src=\"assets/images/Favicon.png\" alt=\"\" />\r\n    </div>\r\n    <div class=\"left__box\">\r\n      <div class=\"menu-item\" onmouseover=\"this.showMenu('menuAdd')\" onmouseleave=\"this.hideMenu()\">\r\n        <div class=\"menu-tag left__box-item Quickadd\">\r\n          <img src=\"assets/images/Quickadd.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuAdd\" class=\"menu-box menu-add\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Add</div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form1')\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon reorder\"></i>Task</span>\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.onOpenAddForm('form2')\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon chrome_reader_mode\"></i>Reading</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"menu-item\" onmouseover=\"this.showMenu('menuTimer')\" onmouseleave=\"this.hideMenu()\">\r\n        <div class=\"menu-tag left__box-item Quicktimer\">\r\n          <img src=\"assets/images/Quicktimer.png\" alt=\"\" />\r\n        </div>\r\n        <div id=\"menuTimer\" class=\"menu-box menu-timer\" style=\"display: none\">\r\n          <div class=\"li unpointer li-tl\">Quick Timer</div>\r\n          <div class=\"li li-item\" onclick=\"this.startTimer()\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon timer\"></i>Startwatch Timer</span>\r\n          </div>\r\n          <div class=\"li li-item\" onclick=\"this.addFlowTimeTracker()\">\r\n            <span class=\"flex unpointer\"><i class=\"mt-icon timelapse\"></i>Flow Time Tracker</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"left__user\">\r\n      <img src=\"assets/images/user.png\" alt=\"\" />\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"right\">\r\n    <!-- Top Flow Time Tracker -->\r\n    <div class=\"right__header\">\r\n      <div id=\"right__header__title\" class=\"right__header__title\">\r\n        {@if editTimeTracker}\r\n        <input id=\"timeTrackerName\" type=\"text\" class=\"flow-time-name\"\r\n          placeholder=\"Please input the task name you want to track time\" />\r\n        {@else} {@if !!selectTrackerItem}\r\n        <span>${selectTrackerItem.name}</span>\r\n        {@else}\r\n        <span onclick=\"this.addFlowTimeTracker()\">What are you working on?</span> {@/if} {@/if}\r\n      </div>\r\n      <!-- <div id=\"Tracker\" style=\"display: none;\" class=\"right__header__title\">Write down what are you going there.</div> -->\r\n      <div id=\"trackerTimer\" class=\"right__header__date\">00:00:00</div>\r\n      {@if !selectTrackerItem}\r\n      <div class=\"right__header__button\">\r\n        <img class=\"right__header__button-img\" src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n        {@if editTimeTracker}\r\n        <img class=\"right__header__button-img selected\" src=\"assets/images/Worktime.png\" alt=\"\"\r\n          onclick=\"this.saveAddFlowTimeTracker()\" />\r\n        {@else}\r\n        <img class=\"right__header__button-img\" src=\"assets/images/Worktime.png\" alt=\"\" />\r\n        {@/if}\r\n        <img class=\"right__header__button-img\" src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n      </div>\r\n      {@else}\r\n      <div class=\"right__header__button\">\r\n        <img class=\"right__header__button-img\" src=\"assets/images/InterrupSmall.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('break')\" />\r\n        <img class=\"right__header__button-img selected\" src=\"assets/images/Worktime.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('work')\" />\r\n        <img class=\"right__header__button-img\" src=\"assets/images/BreaktimeSmall.png\" alt=\"\"\r\n          onclick=\"this.editFlowTimeTracker('rest')\" />\r\n      </div>\r\n      {@/if}\r\n    </div>\r\n\r\n    <div class=\"content\">\r\n      <div class=\"content__one\">\r\n        <!-- Reading——Reading List Creator -->\r\n        <div id=\"readList\" class=\"content__Reading\">\r\n          <div class=\"content__Reading__h\">\r\n            <div class=\"content__Reading__h__text\">Reading</div>\r\n            <img src=\"assets/images/Add.png\" onclick=\"this.onOpenAddForm('form2')\" class=\"content__Reading__h__Add\" />\r\n            <img src=\"assets/images/Openlink.png\" onclick=\"this.openlink()\" class=\"content__Reading__h__Openlink\" />\r\n          </div>\r\n          {@each readList as item}\r\n          <div ondblclick=\"this.change('form2','readList','${item.id}')\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','readList')\" class=\"content__Reading__c\">\r\n            <!-- <div class=\"content__Reading__c__h\">\r\n              <div class=\"content__Reading__c__h__text\">${item.projectName}</div>\r\n              <img onclick=\"this.onOpenAddForm('form2')\" src=\"assets/images/Add.png\"\r\n                class=\"content__Reading__c__h__Add\" />\r\n              <a href='${item.readLink}' target=\"_blank\">\r\n                <img src=\"assets/images/Openlink.png\" class=\"content__Reading__c__h__Openlink\" />\r\n              </a>\r\n\r\n            </div> -->\r\n            <!-- <div class=\"content__Reading__c__box\">${item.name}</div> -->\r\n            <div class=\"content__Reading__c__box\"><a target=\"_blank\" href=\"${item.readLink}\">${item.name}</a></div>\r\n            <!-- <div class=\"content__Reading__c__box\">${item.projectName}</div> -->\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n\r\n        <!-- To Do——Task List  -->\r\n        <div class=\"content__toDo\">\r\n          <div class=\"content__toDo__h\">\r\n            <div class=\"content__toDo__h__text\">To Do</div>\r\n            <img src=\"assets/images/Add.png\" onclick=\"this.onOpenAddForm('form1')\" class=\"content__toDo__h__Add\" />\r\n          </div>\r\n          {@each taskList as item}\r\n          <div oncontextmenu=\"this.onRightMenus('${item.id}','taskList')\"\r\n            onmousedown=\"this.dblclick('form1','taskList',event, this, '${item.id}','ProgressListArae')\"\r\n            class=\"content__toDo__box\">\r\n            <div class=\"content__toDo__box__one\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__toDo__box__two\">\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\">Est. Time:</span><span>${item.estimateTime}</span>\r\n              </div>\r\n              <div class=\"content__toDo__box__two-item\">\r\n                <span class=\"content__toDo__box__two-item__title\">Due Date:</span><span>${item.dueDate}</span>\r\n              </div>\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- On Progress -->\r\n      <div id=\"ProgressListArae\" class=\"content__two\">\r\n        <div class=\"content__two__h\">\r\n          <div class=\"content__two__h__text\">On Progress</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each progressList as item}\r\n          <div id=\"card${item.id}\" class=\"content__two__box\"\r\n            onmousedown=\"this.dblclick('form1','progressList',event, this, '${item.id}','doneListArae')\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','progressList')\">\r\n            {@if selectTrackerItem && item.id == selectTrackerItem.id}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Open.png\" alt=\"\"\r\n              onclick=\"this.cancelSelectTracker()\" />\r\n            {@else}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Stop.png\" alt=\"\"\r\n              onclick=\"this.editTrackerItem('${item.id}')\" />\r\n            {@/if}\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemRestTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">\r\n                    {@if tracker.break} yes {@else} <span class=\"content__two__boxs-items__no\">no </span>{@/if}\r\n                  </span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Done-->\r\n      <div id=\"doneListArae\" class=\"content__two content__three\">\r\n        <div class=\"content__three__h\">\r\n          <div class=\"content__three__h__text\">Done</div>\r\n        </div>\r\n        <div class=\"content__twos__box\">\r\n          {@each doneList as item}\r\n          <div class=\"content__two__box\"\r\n            oncontextmenu=\"this.onRightMenus('${item.id}','doneList')\">\r\n            {@if selectTrackerItem && item.id == selectTrackerItem.id}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Open.png\" alt=\"\"\r\n              onclick=\"this.cancelSelectTracker()\" />\r\n            {@else}\r\n            <img class=\"content__two__box__stop\" src=\"assets/images/Stop.png\" alt=\"\"\r\n              onclick=\"this.editTrackerItem('${item.id}')\" />\r\n            {@/if}\r\n            <div class=\"content__two__boxs__title\">\r\n              ${item.name}\r\n              {@if item.taskPriority === 'High'}<div class=\"task-state mt-icon arrow_upward\" style=\"color: #8E0306;\"></div>{@/if}\r\n              {@if item.taskPriority === 'Medium'}<div class=\"task-state task-priority\" style=\"color: #D78822;\"><span></span></div>{@/if}\r\n              {@if item.taskPriority === 'Low'}<div class=\"task-state mt-icon arrow_downward\" style=\"color: #81E26F;\"></div>{@/if}\r\n            </div>\r\n            <div class=\"content__two__boxs\">\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Est. Time:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowEstTime}</span>\r\n              </div>\r\n              <div class=\"content__two__boxs-item\">\r\n                <span class=\"content__two__boxs-item__title\">Due Date:</span><span\r\n                  class=\"content__two__boxs-item__value\">${item|flowDueDate}</span>\r\n              </div>\r\n              {@each item.trackers as tracker}\r\n              <div class=\"content__two__boxs-item\">\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/Range.png\" alt=\"\" />\r\n                  ${tracker|flowDucation}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/WorktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemWorkTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/BreaktimeSmall.png\" alt=\"\" />\r\n                  ${tracker|flowItemRestTime}\r\n                </div>\r\n                <div class=\"content__two__boxs-items\">\r\n                  <img src=\"assets/images/InterrupSmall.png\" alt=\"\" />\r\n                  <span class=\"content__two__boxs-items__yes\">yes</span>\r\n                </div>\r\n              </div>\r\n              {@/each}\r\n            </div>\r\n          </div>\r\n          {@/each}\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"footer\">\r\n      <!--  Stopwatch Timer > -->\r\n      <div class=\"footer__console\">\r\n        <div id=\"footer__console__time\" class=\"footer__console__time\">\r\n          00:00:00\r\n        </div>\r\n        <div class=\"footer__console__b\">\r\n          <img class=\"footer__console__b__start\"  id=\"timeCountPause\" src=\"assets/images/Start.png\" alt=\"\"\r\n            onclick=\"this.timeCountPause()\" />\r\n          <img id=\"footer__console__b__stop\" class=\"footer__console__b__open\" style=\"display: none\"\r\n            src=\"assets/images/Open.png\" alt=\"\" onclick=\"this.stopTimer()\" />\r\n          <img id=\"footer__console__b__open\" class=\"footer__console__b__open\" src=\"assets/images/Stop.png\" alt=\"\"\r\n            onclick=\"this.startTimer()\" />\r\n          <img class=\"footer__console__b__Return\" src=\"assets/images/return.png\" alt=\"\" onclick=\"this.resetTimer()\" />\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Music Player > -->\r\n      <div style=\"display: none\">\r\n        <audio id=\"myaudio\" controls=\"\" ontimeupdate=\"this.updateProgress(this)\"\r\n         ></audio>\r\n      </div>\r\n      <div class=\"footer__display\">\r\n        <img src=\"${playUrl[0].imgUrl}\" id=\"musicImg\" class=\"footer__display__photo\" />\r\n        <div class=\"footer__display__info\">\r\n          <div class=\"footer__display__info__title\" id=\"musicName\">${playUrl[0].name}</div>\r\n          <div class=\"footer__display__info__singer\" id=\"singer\">${playUrl[0].singer}</div>\r\n        </div>\r\n        <div class=\"footer__display__center\">\r\n          <div class=\"footer__display__center__cons\">\r\n            <img src=\"assets/images/Last.png\" id=\"previous\" onclick=\"this.playNext('-')\" alt=\"\" />\r\n            <img src=\"assets/images/Play.png\" id=\"stop\" style=\"display: none\" onclick=\"this.closePlay()\" alt=\"\" />\r\n            <img src=\"assets/images/Stop.png\" id=\"play\" onclick=\"this.play()\" alt=\"\" />\r\n            <img src=\"assets/images/Next.png\" id=\"playNext\" onclick=\"this.playNext('+')\" alt=\"\"  onclick=\"this.play()\" />\r\n          </div>\r\n          <div class=\"footer__display__center__progressbar\">\r\n            <span id=\"audioCurTime\">00:00</span>\r\n            <span class=\"lone\">\r\n              <span class=\"cur\" id=\"audioCur\"></span>\r\n            </span>\r\n            <span id=\"audioTotalTime\">00:00</span>\r\n          </div>\r\n        </div>\r\n        <div class=\"footer__display__right\">\r\n          <!-- <img src=\"assets/images/Order.png\" alt=\"\" />\r\n          <img src=\"assets/images/Playlist.png\" alt=\"\" />\r\n          <img src=\"assets/images/Volume.png\" alt=\"\" /> -->\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form1\" class=\"form-box wh100\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title flex\"><span>Add Task</span> <span class=\"close\" onclick=\"this.onCancel()\">x</span></div>\r\n      <div class=\"form-item\">\r\n        <label>Task name</label>\r\n        <input value=\"${form1.name}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form1', 'name', this.value)\" />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Due date</label>\r\n        <input value=\"${form1.dueDate}\" placeholder=\"Please input\" type=\"date\"\r\n          oninput=\"this.setFormValue('form1', 'dueDate', this.value)\" />\r\n      </div>\r\n      <div class=\"flex\">\r\n        <div class=\"form-item flex-2\">\r\n          <label>Task priority</label>\r\n          <select onchange=\"this.setFormValue('form1', 'taskPriority', this.value)\" name=\"\" id=\"\">\r\n\r\n            <option disabled selected hidden></option>\r\n            {@if form1.taskPriority == 'Low' }\r\n            <option selected style=\"background-color: #81E26F; color: #fff; font-weight: bold;\" value=\"Low\">\r\n              Low\r\n            </option>\r\n            {@else} <option style=\"background-color: #81E26F; color: #fff;\" value=\"Low\">\r\n              Low\r\n            </option> {@/if}\r\n            {@if form1.taskPriority == 'Medium'} <option selected style=\"background-color: #D78822; color: #fff; font-weight: bold;\" value=\"Medium\">\r\n              Medium\r\n            </option> {@else} <option style=\"background-color: #D78822; color: #fff;\" value=\"Medium\">\r\n              Medium\r\n            </option> {@/if} {@if form1.taskPriority == 'High'}\r\n            <option selected style=\"background-color: #8E0306; color: #fff; font-weight: bold;\" value=\"High\">\r\n              High\r\n            </option> {@else}\r\n            <option style=\"background-color: #8E0306; color: #fff;\" value=\"High\">\r\n              High\r\n            </option> {@/if}\r\n          </select>\r\n        </div>\r\n        <div class=\"form-item flex-3\">\r\n          <label>Estimated time(in mins)</label>\r\n          <input type=\"number\" min=\"0\" value=\"${form1.estimateTime}\" placeholder=\"Estimated time(in mins)\"\r\n            type=\"datetime\" oninput=\"this.setFormValue('form1', 'estimateTime', this.value)\" />\r\n        </div>\r\n      </div>\r\n      <div class=\"form-btns\">\r\n        <!-- <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form1')\">Save</button> -->\r\n        <div onclick=\"this.onAddSave('form1')\" class=\"Save\">Save</div>\r\n        <div onclick=\"this.onCancel()\" class=\"outline\"> Cancel</div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div id=\"form2\" class=\"form-box wh100 flex\" style=\"display: none\">\r\n  <div class=\"flex wh100\">\r\n    <div class=\"flex-1 h100\" onclick=\"this.onCancel()\"></div>\r\n    <div class=\"form-panel\">\r\n      <div class=\"form-title flex\">\r\n        <span>Add Reading</span> <span class=\"close\" onclick=\"this.onCancel()\">x</span>\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Name the reading</label>\r\n        <input value=\"${form2.name}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'name', this.value)\" />\r\n      </div>\r\n      <div class=\"form-item\">\r\n        <label>Reading link</label>\r\n        <input value=\"${form2.readLink}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'readLink', this.value)\" />\r\n      </div>\r\n      <!-- <div class=\"form-item\">\r\n        <label>Project name</label>\r\n        <input value=\"${form2.projectName}\" placeholder=\"Please input\"\r\n          oninput=\"this.setFormValue('form2', 'projectName', this.value)\" />\r\n      </div> -->\r\n      <div class=\"form-btns\">\r\n        <div onclick=\"this.onAddSave('form2')\" class=\"Save\">Save</div>\r\n        <div onclick=\"this.onCancel()\" class=\"outline\"> Cancel</div>\r\n        <!-- <button type=\"button\" class=\"outline me-4\" onclick=\"this.onCancel()\">\r\n          Cancel\r\n        </button>\r\n        <button type=\"button\" onclick=\"this.onAddSave('form2')\">Save</button> -->\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ul id=\"menus\">\r\n  <li id=\"menusDelete\" onclick=\"this.onMenusDelete(event)\">Delete</li>\r\n</ul>";
 
 },{}],"aNzNG":[function() {},{}],"79PXr":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");

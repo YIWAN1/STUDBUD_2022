@@ -1,27 +1,11 @@
-import {
-  BindObject,
-  observeInsert,
-  observeRender
-} from "../js/bind";
+import { BindObject, observeInsert, observeRender } from "../js/bind";
 import juicer from "juicer";
 
 import "./app.scss";
-import {
-  Footer
-} from "./views/footer/footer";
-import {
-  kvdb
-} from "../js/kvdb";
-import {
-  formatTime,
-  formatTime2,
-  getUnixSeconds,
-  randId
-} from "../js/utils";
-import {
-  FlowTimeTracker,
-  FlowTimeTrackerItem
-} from "../js/define";
+import { Footer } from "./views/footer/footer";
+import { kvdb } from "../js/kvdb";
+import { formatTime, formatTime2, getUnixSeconds, randId } from "../js/utils";
+import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
 
 var _isBindEvent = false;
@@ -41,6 +25,7 @@ function sysDragUp(e) {
 }
 
 export class App {
+  playUrl = [];
   //
   components = [];
   componentFooter;
@@ -52,7 +37,7 @@ export class App {
 
   timeCount = 0;
   trackerTimer = 0;
-
+  playIndex = 0;
   constructor(id) {
     this.data = new BindObject(this);
     this.containerId = id;
@@ -63,7 +48,7 @@ export class App {
 
     this.components = [footer];
   }
-
+// 页面初始化
   init() {
     this.data.init({
       readList: [],
@@ -85,11 +70,32 @@ export class App {
         readLink: "",
         projectName: "",
       },
+      playUrl: [
+        {
+          url: "../assets/mp3/Joji-BENEE-Afterthought(1).mp3",
+          name: "Afterthought",
+          imgUrl: "../assets/mp3/Cover.png",
+          singer: "Joji",
+        },
+        {
+          url: "../assets/mp3/Harry Styles - As It Was.mp3",
+          name: "As It Was",
+          imgUrl: "../assets/mp3/Cover1.JPG",
+          singer: "Harry Styles",
+        },
+        {
+          url: "../assets/mp3/ØZI、9M88 - B.O..mp3",
+          name: "B.O.",
+          imgUrl: "../assets/mp3/Cover2.JPG",
+          singer: "ØZI、9M88",
+        },
+      ],
     });
 
     this.getData();
   }
 
+  // 获取初始化后的基本数据
   async getData() {
     const taskList = await kvdb.get("taskList", []);
     const readList = await kvdb.get("readList", []);
@@ -107,18 +113,19 @@ export class App {
     this.data.set(data);
     this.updateSelectTrackerStatus();
   }
-
+// 重绘页面
   viewRender() {
     if (!this.containerId) {
       return;
     }
     observeRender(this, this.containerId, compiledTpl, this.data.get());
   }
-
+// 显示 测导航二级菜单
   showMenu(id) {
     this.hideMenu();
     document.getElementById(id).style.display = "block";
   }
+// 隐藏 测导航二级菜单
 
   hideMenu() {
     const els = document.querySelectorAll(".menu-box");
@@ -126,7 +133,7 @@ export class App {
       item.style.display = "none";
     }
   }
-
+// 填入Add Task数据
   setFormValue(formName, key, value) {
     console.log(formName, key, value, arguments);
     const data = this.data.get();
@@ -150,6 +157,7 @@ export class App {
     f1.style.display = "none";
     f2.style.display = "none";
   }
+  // Cancel form panel
 
   onCancel() {
     this.hideFloatLayer();
@@ -158,7 +166,7 @@ export class App {
     this.data.onlyReset("form2");
     this.viewRender();
   }
-
+// 新增 read ，task数据
   onAddSave(formName) {
     const data = this.data.get();
     const formData = data[formName];
@@ -179,7 +187,7 @@ export class App {
 
     if (formName == "form1") {
       if (!formData.form) {
-        formData.form = 'taskList';
+        formData.form = "taskList";
       }
       this.editListItem(formData.form, formData, isAdd);
     } else if (formName == "form2") {
@@ -245,7 +253,7 @@ export class App {
     this.data.onlySet(data);
     kvdb.set(listName, list);
   }
-
+// 开始计时
   startTimer() {
     this.timeCount = 0;
     document.getElementById("right__header__title").innerHTML =
@@ -255,12 +263,10 @@ export class App {
     document.getElementById("footer__console__b__open").style.display = "none";
     document.getElementById("footer__console__b__open").style.display = "none";
 
-
     this.timeCountRun();
   }
-
+  // 归零计时
   timeCountRun() {
-
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
@@ -275,19 +281,19 @@ export class App {
       this.timeCountRun();
     }, 1000);
   }
-
+// 
   timeCountPause() {
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
     }
   }
-
+// 重置计时数据
   resetTimer() {
-    console.log('resetTimer')
+    console.log("resetTimer");
     this.timeCount = 0;
   }
-
+// 停止计时
   stopTimer(istit) {
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
@@ -309,17 +315,45 @@ export class App {
   // 音频播放。。。
   play() {
     const myaudio = document.getElementById("myaudio");
+    const playUrl = this.data.get()["playUrl"];
+    let musicName = document.getElementById("musicName");
+    let musicImg = document.getElementById("musicImg");
+    let singer = document.getElementById("singer");
+    musicName.innerHTML = playUrl[this.playIndex].name;
+    singer.innerHTML = playUrl[this.playIndex].singer;
+    myaudio.setAttribute("src", playUrl[this.playIndex].url);
+    musicImg.setAttribute("src", playUrl[this.playIndex].imgUrl);
     myaudio.play();
     document.getElementById("play").style.display = "none";
     document.getElementById("stop").style.display = "inline-block";
   }
+  // 关闭音频
   closePlay() {
     const myaudio = document.getElementById("myaudio");
     myaudio.pause();
     document.getElementById("stop").style.display = "none";
     document.getElementById("play").style.display = "inline-block";
   }
+  // 上一首  下一首
+  playNext(type) {
+    const playUrl = this.data.get()["playUrl"];
+    if (type == "+") {
+      if (this.playIndex < playUrl.length - 1) {
+        this.playIndex++;
+      } else {
+        this.playIndex = 0;
+      }
+    } else {
+      if (this.playIndex > 0) {
+        this.playIndex--;
+      } else {
+        this.playIndex = playUrl.length - 1;
+      }
+    }
 
+    this.play();
+  }
+  // 右键时显示删除按钮
   onRightMenus(id, type) {
     const acac = this;
     event.preventDefault();
@@ -333,7 +367,7 @@ export class App {
     m.setAttribute("data-id", id);
     m.setAttribute("data-type", type);
   }
-
+  // 右键时显示删除按钮
   onMenusDelete(e) {
     // console.log(type, id);
     e = e || window.event;
@@ -344,9 +378,14 @@ export class App {
     const oM = document.getElementById("menus");
     oM.style.display = "none";
 
-    this.editListItem(type, {
-      id: id
-    }, false, true);
+    this.editListItem(
+      type,
+      {
+        id: id,
+      },
+      false,
+      true
+    );
     if (type == "progressList" || type == "doneList") {
       const selectTrackerItem = this.data.get("selectTrackerItem", null);
       if (selectTrackerItem && selectTrackerItem.id == id) {
@@ -356,10 +395,11 @@ export class App {
 
     this.viewRender();
   }
-
+// 冒泡时隐藏删除按钮
   hideRightMenuLayer() {
     document.getElementById("menus").style.display = "none";
   }
+  // 双击页面卡片时 修改/删除
   dblclick(type, listName, e, el, id, domId) {
     var now = new Date().getTime();
 
@@ -375,7 +415,7 @@ export class App {
       this.dragDown(e, el, id, domId);
     }
   }
-
+// 修改数据
   change(type, listName, id) {
     const data = this.data.get();
     const list = data[listName];
@@ -400,7 +440,7 @@ export class App {
     console.log(this.data.get());
     this.onOpenAddForm(type);
   }
-
+// 页面头部输入
   addFlowTimeTracker() {
     console.log(123);
     this.data.onlySet({
@@ -408,7 +448,7 @@ export class App {
     });
     this.cancelSelectTracker();
   }
-
+// 与上个方法串联使用
   saveAddFlowTimeTracker() {
     const el = document.getElementById("timeTrackerName");
     const name = el ? el.value : "";
@@ -431,6 +471,7 @@ export class App {
     this.viewRender();
   }
 
+// 与上个方法串联使用
   findOneTrackerItem(id) {
     if (!id) {
       return null;
@@ -456,7 +497,7 @@ export class App {
     }
     return null;
   }
-
+// 停止卡片计时
   editTrackerItem(id) {
     const selectItem = this.findOneTrackerItem(id);
 
@@ -470,7 +511,7 @@ export class App {
     });
     this.updateSelectTrackerStatus();
   }
-
+// 与下3个方法组成拖拽整体方法
   getSelectTrackerLast() {
     const tracker = this.data.get("selectTrackerItem", null);
     if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -517,7 +558,7 @@ export class App {
     kvdb.del("selectTrackerItem");
     this.updateSelectTrackerStatus();
   }
-
+// 头部三个按钮的事件
   editFlowTimeTracker(type) {
     const tracker = this.data.get("selectTrackerItem", null);
     if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
@@ -651,9 +692,9 @@ export class App {
     document.body.appendChild(this.dEle);
   }
   dragMove(e) {
-    window.getSelection ?
-      window.getSelection().removeAllRanges() :
-      document.selection.empty();
+    window.getSelection
+      ? window.getSelection().removeAllRanges()
+      : document.selection.empty();
 
     e = e || window.event;
 
@@ -672,9 +713,9 @@ export class App {
   }
 
   dragUp(e) {
-    window.getSelection ?
-      window.getSelection().removeAllRanges() :
-      document.selection.empty();
+    window.getSelection
+      ? window.getSelection().removeAllRanges()
+      : document.selection.empty();
 
     const aimBox = document.getElementById(this.dEle.getAttribute("dom-id"));
     const inArea = this.dragInArea(e, aimBox);
@@ -731,17 +772,15 @@ export class App {
     tmel1.innerHTML = formatTime2(ap.currentTime);
     tmel2.innerHTML = formatTime2(ap.duration);
   }
-  caca(val) {
-    console.log(val);
-  }
+  // read 打开所有链接
   openlink() {
-    var els = document.querySelectorAll('#readList a')
+    var els = document.querySelectorAll("#readList a");
     console.log(els);
     for (let i = 0; i < els.length; i++) {
       // v.onclick()
-      let url = els[i].href
+      let url = els[i].href;
       setTimeout(() => {
-        window.open(url, '_blank')
+        window.open(url, "_blank");
       }, 500);
     }
   }
