@@ -173,6 +173,10 @@
   padding: 0 8rem;
 }
 
+#app .right__header__title span {
+  cursor: pointer;
+}
+
 #app .right__header__title input.flow-time-name {
   width: 92%;
   background-color: #f2f2f2;

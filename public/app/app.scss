@@ -175,6 +175,9 @@
   }
 
   .right__header__title {
+    span{
+      cursor: pointer;
+    }
     input.flow-time-name {
       font-size: 36rem;
       background-color: #f2f2f2;

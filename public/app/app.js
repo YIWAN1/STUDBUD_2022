@@ -1,11 +1,27 @@
-import { BindObject, observeInsert, observeRender } from "../js/bind";
+import {
+  BindObject,
+  observeInsert,
+  observeRender
+} from "../js/bind";
 import juicer from "juicer";
 
 import "./app.scss";
-import { Footer } from "./views/footer/footer";
-import { kvdb } from "../js/kvdb";
-import { formatTime, formatTime2, getUnixSeconds, randId } from "../js/utils";
-import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
+import {
+  Footer
+} from "./views/footer/footer";
+import {
+  kvdb
+} from "../js/kvdb";
+import {
+  formatTime,
+  formatTime2,
+  getUnixSeconds,
+  randId
+} from "../js/utils";
+import {
+  FlowTimeTracker,
+  FlowTimeTrackerItem
+} from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
 
 var _isBindEvent = false;
@@ -162,7 +178,7 @@ export class App {
     this.hideFloatLayer();
 
     if (formName == "form1") {
-      if(!formData.form) {
+      if (!formData.form) {
         formData.form = 'taskList';
       }
       this.editListItem(formData.form, formData, isAdd);
@@ -238,14 +254,13 @@ export class App {
       "inline-block";
     document.getElementById("footer__console__b__open").style.display = "none";
     document.getElementById("footer__console__b__open").style.display = "none";
-   
-    
+
+
     this.timeCountRun();
   }
 
   timeCountRun() {
-    document.getElementById("timeCountRun").style.display = "none";
-    document.getElementById("timeCountPause").style.display = "inline-block";
+
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
@@ -262,9 +277,6 @@ export class App {
   }
 
   timeCountPause() {
-    document.getElementById("timeCountRun").style.display = "inline-block";
-    document.getElementById("timeCountPause").style.display = "none";
-
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
       this.timeCountId = 0;
@@ -272,6 +284,7 @@ export class App {
   }
 
   resetTimer() {
+    console.log('resetTimer')
     this.timeCount = 0;
   }
 
@@ -287,8 +300,6 @@ export class App {
     document.getElementById("footer__console__b__stop").style.display = "none";
     document.getElementById("footer__console__b__open").style.display =
       "inline-block";
-      document.getElementById("timeCountRun").style.display = "inline-block";
-      document.getElementById("timeCountPause").style.display = "none";
     if (istit) {
       document.getElementById("right__header__title").innerHTML =
         "Write down what are you going there.";
@@ -333,7 +344,9 @@ export class App {
     const oM = document.getElementById("menus");
     oM.style.display = "none";
 
-    this.editListItem(type, { id: id }, false, true);
+    this.editListItem(type, {
+      id: id
+    }, false, true);
     if (type == "progressList" || type == "doneList") {
       const selectTrackerItem = this.data.get("selectTrackerItem", null);
       if (selectTrackerItem && selectTrackerItem.id == id) {
@@ -389,6 +402,7 @@ export class App {
   }
 
   addFlowTimeTracker() {
+    console.log(123);
     this.data.onlySet({
       editTimeTracker: true,
     });
@@ -637,9 +651,9 @@ export class App {
     document.body.appendChild(this.dEle);
   }
   dragMove(e) {
-    window.getSelection
-      ? window.getSelection().removeAllRanges()
-      : document.selection.empty();
+    window.getSelection ?
+      window.getSelection().removeAllRanges() :
+      document.selection.empty();
 
     e = e || window.event;
 
@@ -658,9 +672,9 @@ export class App {
   }
 
   dragUp(e) {
-    window.getSelection
-      ? window.getSelection().removeAllRanges()
-      : document.selection.empty();
+    window.getSelection ?
+      window.getSelection().removeAllRanges() :
+      document.selection.empty();
 
     const aimBox = document.getElementById(this.dEle.getAttribute("dom-id"));
     const inArea = this.dragInArea(e, aimBox);

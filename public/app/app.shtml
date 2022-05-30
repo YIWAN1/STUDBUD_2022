@@ -89,7 +89,7 @@
           <div ondblclick="this.change('form2','readList','${item.id}')"
             oncontextmenu="this.onRightMenus('${item.id}','readList')" class="content__Reading__c">
             <div class="content__Reading__c__h">
-              <div class="content__Reading__c__h__text">${item.name}</div>
+              <div class="content__Reading__c__h__text">${item.projectName}</div>
               <img onclick="this.onOpenAddForm('form2')" src="assets/images/Add.png"
                 class="content__Reading__c__h__Add" />
               <a href='${item.readLink}' target="_blank">
@@ -97,9 +97,9 @@
               </a>
 
             </div>
-            <div class="content__Reading__c__box">${item.name}</div>
-            <div class="content__Reading__c__box"><a href="${item.readLink}">${item.readLink}</a></div>
-            <div class="content__Reading__c__box">${item.projectName}</div>
+            <!-- <div class="content__Reading__c__box">${item.name}</div> -->
+            <div class="content__Reading__c__box"><a target="_blank" href="${item.readLink}">${item.name}</a></div>
+            <!-- <div class="content__Reading__c__box">${item.projectName}</div> -->
           </div>
           {@/each}
         </div>
@@ -257,9 +257,8 @@
           00:00:00
         </div>
         <div class="footer__console__b">
-          <img class="footer__console__b__start" style="display: none;"  id="timeCountPause" src="assets/images/Start.png" alt=""
+          <img class="footer__console__b__start"  id="timeCountPause" src="assets/images/Start.png" alt=""
             onclick="this.timeCountPause()" />
-          <img class="footer__console__b__start" id="timeCountRun" src="assets/images/Next.png" alt="" />
           <img id="footer__console__b__stop" class="footer__console__b__open" style="display: none"
             src="assets/images/Open.png" alt="" onclick="this.stopTimer()" />
           <img id="footer__console__b__open" class="footer__console__b__open" src="assets/images/Stop.png" alt=""
