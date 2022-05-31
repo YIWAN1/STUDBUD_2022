@@ -56,7 +56,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-2. Dragging the whole download folder into an open window of the text editor.
+2. Dragging the whole downloaded folder into an open window of the text editor.
  ![ImportFolder](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/ImportFolder.jpg?raw=true)
 
 <br/>
@@ -117,7 +117,7 @@ For the users' convenience, many shortcut functions have been added.
 
 ## All steps are correct but still can't open it ⁉️ 🤔️
 If the web page can not open, please ensure you cloned the full code. The computer may not recognise some codes and therefore hide them.
-This situation has appears in my computer, `parcelrc` file has been hided.
+This situation has happened on my computer, which hid the `parcelrc` file.
 
 <br/>
 
