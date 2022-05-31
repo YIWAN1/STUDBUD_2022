@@ -146,7 +146,7 @@ This situation has appears in my computer, `parcelrc` file has been hided.
  
 #### Time Management：
 * Stopwatch Timer ：
-    * The left button is `⏸Stop`, The medium one is `⏹start&End` and the right one is `⤴️Reset-to-Start`
+    * The left button is `⏸Stop`, The middle one is `⏹start&End` and the right one is `⤴️Reset-to-Start`
     * You can see the current time elapsed
     ![Stopwatch Timer](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/StopwatchTimer.jpg?raw=true)    
 #  
@@ -174,7 +174,7 @@ This situation has appears in my computer, `parcelrc` file has been hided.
 <br/>
 
 
-## Still can not open all reading link after click `↗️` ⁉️ 🤔️
+## Still can not open all reading link after clicking `↗️` ⁉️ 🤔️
 If this icon appears on your web page, your browser has default blocked pop-ups, make sure you have selectted 'Always allow’.😉
 <div align="center">
     <img src="https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/6bc2206148f6f0a766b678cce9375ee0e01236d8/image/%20blockpopups.jpg" alt="blockpopups">
