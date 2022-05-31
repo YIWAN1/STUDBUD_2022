@@ -6,7 +6,7 @@
 
   [**Live Demo —— Activate based on installation instructions →**](http://localhost:8888/)
 
-  ![Devices Mockup](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/DevicesMockup.png?raw=true)
+  ![Devices Mockup](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/TheDevicesMockup.png?raw=true)
 
 </div>
 
