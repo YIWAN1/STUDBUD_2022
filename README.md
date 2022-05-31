@@ -15,9 +15,10 @@
 ## Table of Contents
 * [Background](#background)
 * [Installation Instructions](#installation-instructions---steps-guide-to-activate-studbud-web-page)
-* [Can not open the web page?](#%EF%B8%8F-all-steps-are-correct-but-still-cant-open-it%EF%B8%8F)
+* [Can not open the web page?](#all-steps-are-correct-but-still-cant-open-it-%EF%B8%8F-%EF%B8%8F)
 * [Features and Usage Introduction](#features-and-usage-introduction)
-* [Acknowledgement](#acknowledgement)
+* [The function of ‘Open all groups of links’ is not working?](#still-can-not-open-all-reading-link-after-click-%EF%B8%8F-%EF%B8%8F-%EF%B8%8F)
+* [Acknowledgement](#-acknowledgement-)
 
 
 ## Background 
@@ -106,15 +107,15 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 8. Return [**Live Demo →**](http://localhost:8888/) and press `f12`  to refresh the page
+### Step 8. Return and refresh [**Live Demo →**](http://localhost:8888/) the page
 
 <br/>
 
-### 🎉 The website created is now right in front of you 🥳🥳🥳!
+### 🎉 The website created is now right in front of you !!!🥳🥳🥳
 
 <br/>
 
-## ⁉️ All steps are correct but still can't open it？🤔️
+## All steps are correct but still can't open it ⁉️ 🤔️
 If the web page can not open, please ensure you cloned the full code. The computer may not recognise the code and therefore block it.
 This situation has appears in my computer, it blocked `parcelrc` file.
 
@@ -173,7 +174,7 @@ This situation has appears in my computer, it blocked `parcelrc` file.
 <br/>
 
 
-## ⁉️ Still can not open all reading link after click `↗️` ？🤔️
+## Still can not open all reading link after click `↗️` ⁉️ 🤔️
 If this icon appears on your web page, your browser has default blocked pop-ups, make sure you have selectted 'Always allow’.😉
 <div align="center">
     <img src="https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/6bc2206148f6f0a766b678cce9375ee0e01236d8/image/%20blockpopups.jpg" alt="blockpopups">
