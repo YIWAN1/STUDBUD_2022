@@ -77,7 +77,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 3. Delete the `parcel-cache` and `node_modules` folder folder in the code
+### Step 3. Delete the `.parcel-cache` and `node_modules` folder folder
 
    ![Delete folders](https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/2e5ff9e212fe8af334cb13aea677320f7a0cddb5/image/Delete%20folders.jpg)
 
@@ -90,7 +90,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 5. Start the blank web server using the command: 
+### Step 5. Start the web page using the command: 
    ```sh 
    npm run start
    ```	
