@@ -107,7 +107,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 8. Return and refresh [**Live Demo →**](http://localhost:8888/) the page
+### Step 8. Return and refresh web page [**Live Demo →**](http://localhost:8888/)  
 
 <br/>
 
@@ -116,8 +116,8 @@ For the users' convenience, many shortcut functions have been added.
 <br/>
 
 ## All steps are correct but still can't open it ⁉️ 🤔️
-If the web page can not open, please ensure you cloned the full code. The computer may not recognise the code and therefore block it.
-This situation has appears in my computer, it blocked `parcelrc` file.
+If the web page can not open, please ensure you cloned the full code. The computer may not recognise some codes and therefore hide them.
+This situation has appears in my computer, `parcelrc` file has been hided.
 
 <br/>
 
