@@ -77,7 +77,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 3. Delete the `.parcel-cache` and `node_modules` folder folder
+### Step 3. Delete the `.parcel-cache` folder  and `node_modules` folder
 
    ![Delete folders](https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/2e5ff9e212fe8af334cb13aea677320f7a0cddb5/image/Delete%20folders.jpg)
 
