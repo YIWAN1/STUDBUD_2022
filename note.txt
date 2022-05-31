@@ -6,25 +6,28 @@ npm install --save @templatejs/runtime
 Step2: # Install the template compiler plugin by running the command:
 npm install --save-dev parcel-plugin-template
 
-（💠 This is a template plugin that makes it easier to implement interactive page displays and data changes）
-
-Step3: Delete the node_modules and parcel-cache from the code
-#delete node_modules
-#delete parcel-cache
+Step3: Delete the .parcel-cache and node_modules folder
+#delete parcel-cache folder
+#delete node_modules folder
 
 Step4: Install the SASS package by running the command:
 npm install sass
 
-Step5:  Start the blank web server using the command:
+Step5:  Start the web page using the command:
 npm run start
 
-Step6: Open https://localhost:8888 web server
+Step6: Open https://localhost:8888/ web page
 (The web page is blank….No worries😉 )
 
 Step7:  Run your server with the following command:
 npm run dev
 
-Step8： Return  https://localhost:8888 web server screen and press f14 to refresh the page
+Step8： Return and Refresh https://localhost:8888/ web page
 
 🎉 The website created is now right in front of you!
+
+All steps are correct but still can't open it ⁉️ 🤔️
+If the web page can not open, please ensure you cloned the full code. The computer may not recognise the code and therefore block it. This situation has appears in my computer, it blocked parcelrc file.
+
+
 
