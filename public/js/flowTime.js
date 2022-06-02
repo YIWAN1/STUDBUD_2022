@@ -28,7 +28,7 @@ export const flowItemRestTime = (v) => {
     end = now;
   }
 
-  var ducation = end - v.rest;
+  var ducation = end - rest;
   return secondToHMS(ducation);
 };
 
@@ -66,4 +66,28 @@ export const flowDucation = (v) => {
   var e = new Date(end * 1000);
 
   return formatDate(s, "hh:mm") + " ~ " + formatDate(s, "hh:mm");
+};
+
+export const trackItemState = (item, type) => {
+  if (!item || !item.trackers || item.trackers.length < 1) {
+    return "";
+  }
+  const lastItem = item.trackers[item.trackers.length - 1];
+  if (!lastItem.rest) {
+    lastItem.rest = 0;
+  }
+  if (type == "rest") {
+    if (lastItem.rest > 0 && !lastItem.break) {
+      return "selected";
+    }
+  } else if (type == "break") {
+    if (lastItem.end > 0 && lastItem.break) {
+      return "selected";
+    }
+  } else if (type == "work") {
+    if (lastItem.rest < 1) {
+      return "selected";
+    }
+  }
+  return "";
 };

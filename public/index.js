@@ -10,6 +10,7 @@ import {
   flowEstTime,
   flowItemRestTime,
   flowItemWorkTime,
+  trackItemState,
 } from "./js/flowTime.js";
 
 (function () {
@@ -29,6 +30,7 @@ import {
   juicer.register("flowDucation", flowDucation);
   juicer.register("flowItemRestTime", flowItemRestTime);
   juicer.register("flowItemWorkTime", flowItemWorkTime);
+  juicer.register("trackItemState", trackItemState);
 
   kvdb.init();
 

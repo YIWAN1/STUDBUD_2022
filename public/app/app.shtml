@@ -60,17 +60,17 @@
         <img class="right__header__button-img selected" src="assets/images/Worktime.png" alt=""
           onclick="this.saveAddFlowTimeTracker()" />
         {@else}
-        <img class="right__header__button-img" src="assets/images/Worktime.png" alt="" />
+        <img class="right__header__button-img"  src="assets/images/Worktime.png" alt="" />
         {@/if}
-        <img class="right__header__button-img" src="assets/images/BreaktimeSmall.png" alt="" />
+        <img class="right__header__button-img" id="rest" src="assets/images/BreaktimeSmall.png" alt="" />
       </div>
       {@else}
       <div class="right__header__button">
-        <img class="right__header__button-img" src="assets/images/InterrupSmall.png" alt=""
+        <img class="right__header__button-img ${selectTrackerItem|trackItemState,'break'}" src="assets/images/InterrupSmall.png" alt=""
           onclick="this.editFlowTimeTracker('break')" />
-        <img class="right__header__button-img selected" src="assets/images/Worktime.png" alt=""
-          onclick="this.editFlowTimeTracker('work')" />
-        <img class="right__header__button-img" src="assets/images/BreaktimeSmall.png" alt=""
+        <img class="right__header__button-img ${selectTrackerItem|trackItemState,'work'}" src="assets/images/Worktime.png" alt=""
+           />
+        <img class="right__header__button-img ${selectTrackerItem|trackItemState,'rest'}" src="assets/images/BreaktimeSmall.png" alt=""
           onclick="this.editFlowTimeTracker('rest')" />
       </div>
       {@/if}
@@ -116,9 +116,12 @@
             class="content__toDo__box">
             <div class="content__toDo__box__one">
               ${item.name}
-              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
-              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
-              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;">
+              </div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;">
+                <span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;">
+              </div>{@/if}
             </div>
             <div class="content__toDo__box__two">
               <div class="content__toDo__box__two-item">
@@ -144,17 +147,20 @@
             onmousedown="this.dblclick('form1','progressList',event, this, '${item.id}','doneListArae')"
             oncontextmenu="this.onRightMenus('${item.id}','progressList')">
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
-            <img class="content__two__box__stop" src="assets/images/Open.png" alt=""
-              onclick="this.cancelSelectTracker()" />
+            <img class="content__two__box__stop out-pointer" src="assets/images/Open.png" alt=""
+              onclick="this.cancelSelectTracker(event)" />
             {@else}
-            <img class="content__two__box__stop" src="assets/images/Stop.png" alt=""
-              onclick="this.editTrackerItem('${item.id}')" />
+            <img class="content__two__box__stop out-pointer" src="assets/images/Stop.png" alt=""
+              onclick="this.startTrackerItem(event, '${item.id}')" />
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
-              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
-              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;">
+              </div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;">
+                <span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;">
+              </div>{@/if}
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -200,20 +206,22 @@
         </div>
         <div class="content__twos__box">
           {@each doneList as item}
-          <div class="content__two__box"
-            oncontextmenu="this.onRightMenus('${item.id}','doneList')">
+          <div class="content__two__box" oncontextmenu="this.onRightMenus('${item.id}','doneList')">
             {@if selectTrackerItem && item.id == selectTrackerItem.id}
-            <img class="content__two__box__stop" src="assets/images/Open.png" alt=""
-              onclick="this.cancelSelectTracker()" />
+            <img class="content__two__box__stop out-pointer" src="assets/images/Open.png" alt=""
+              onclick="this.cancelSelectTracker(event)" />
             {@else}
-            <img class="content__two__box__stop" src="assets/images/Stop.png" alt=""
-              onclick="this.editTrackerItem('${item.id}')" />
+            <img class="content__two__box__stop out-pointer" src="assets/images/Stop.png" alt=""
+              onclick="this.startTrackerItem(event, '${item.id}')" />
             {@/if}
             <div class="content__two__boxs__title">
               ${item.name}
-              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;"></div>{@/if}
-              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;"><span></span></div>{@/if}
-              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;"></div>{@/if}
+              {@if item.taskPriority === 'High'}<div class="task-state mt-icon arrow_upward" style="color: #8E0306;">
+              </div>{@/if}
+              {@if item.taskPriority === 'Medium'}<div class="task-state task-priority" style="color: #D78822;">
+                <span></span></div>{@/if}
+              {@if item.taskPriority === 'Low'}<div class="task-state mt-icon arrow_downward" style="color: #81E26F;">
+              </div>{@/if}
             </div>
             <div class="content__two__boxs">
               <div class="content__two__boxs-item">
@@ -257,7 +265,7 @@
           00:00:00
         </div>
         <div class="footer__console__b">
-          <img class="footer__console__b__start"  id="timeCountPause" src="assets/images/Start.png" alt=""
+          <img class="footer__console__b__start" id="timeCountPause" src="assets/images/Start.png" alt=""
             onclick="this.timeCountPause()" />
           <img id="footer__console__b__stop" class="footer__console__b__open" style="display: none"
             src="assets/images/Open.png" alt="" onclick="this.stopTimer()" />
@@ -269,8 +277,7 @@
 
       <!-- Music Player > -->
       <div style="display: none">
-        <audio id="myaudio" controls="" ontimeupdate="this.updateProgress(this)"
-         ></audio>
+        <audio id="myaudio" controls="" ontimeupdate="this.updateProgress(this)"></audio>
       </div>
       <div class="footer__display">
         <img src="${playUrl[0].imgUrl}" id="musicImg" class="footer__display__photo" />
@@ -283,7 +290,7 @@
             <img src="assets/images/Last.png" id="previous" onclick="this.playNext('-')" alt="" />
             <img src="assets/images/Play.png" id="stop" style="display: none" onclick="this.closePlay()" alt="" />
             <img src="assets/images/Stop.png" id="play" onclick="this.play()" alt="" />
-            <img src="assets/images/Next.png" id="playNext" onclick="this.playNext('+')" alt=""  onclick="this.play()" />
+            <img src="assets/images/Next.png" id="playNext" onclick="this.playNext('+')" alt="" onclick="this.play()" />
           </div>
           <div class="footer__display__center__progressbar">
             <span id="audioCurTime">00:00</span>
@@ -330,7 +337,8 @@
             {@else} <option style="background-color: #81E26F; color: #fff;" value="Low">
               Low
             </option> {@/if}
-            {@if form1.taskPriority == 'Medium'} <option selected style="background-color: #D78822; color: #fff; font-weight: bold;" value="Medium">
+            {@if form1.taskPriority == 'Medium'} <option selected
+              style="background-color: #D78822; color: #fff; font-weight: bold;" value="Medium">
               Medium
             </option> {@else} <option style="background-color: #D78822; color: #fff;" value="Medium">
               Medium

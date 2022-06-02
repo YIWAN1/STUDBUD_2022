@@ -106,3 +106,17 @@ export const formatDate = (date, fmt) => {
   }
   return fmt;
 };
+
+export const stopEvent = (e) => {
+  e = e || window.event; //
+  if (e.preventDefault) {
+    e.preventDefault();
+  } else {
+    e.returnValue = false;
+  }
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  } else {
+    e.cancelBubble = true;
+  }
+};

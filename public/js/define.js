@@ -11,7 +11,7 @@ export class FlowTimeTrackerItem {
     start = 0;
     end = 0;
     break = false;
-    restTime = 0;
+    rest = 0;
 
 
 }

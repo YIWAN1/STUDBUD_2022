@@ -4,7 +4,13 @@ import juicer from "juicer";
 import "./app.scss";
 import { Footer } from "./views/footer/footer";
 import { kvdb } from "../js/kvdb";
-import { formatTime, formatTime2, getUnixSeconds, randId } from "../js/utils";
+import {
+  formatTime,
+  formatTime2,
+  getUnixSeconds,
+  randId,
+  stopEvent,
+} from "../js/utils";
 import { FlowTimeTracker, FlowTimeTrackerItem } from "../js/define";
 const compiledTpl = juicer(require("./app.shtml"));
 
@@ -135,7 +141,6 @@ export class App {
   }
 // Fill Add Task data
   setFormValue(formName, key, value) {
-    console.log(formName, key, value, arguments);
     const data = this.data.get();
     if (!data[formName]) {
       data[formName] = {};
@@ -146,7 +151,6 @@ export class App {
 
   // open form panel
   onOpenAddForm(id) {
-    console.log(id);
     this.hideFloatLayer();
     document.getElementById(id).style.display = "block";
   }
@@ -179,8 +183,6 @@ export class App {
       isAdd = true;
       formData.id = randId(); // set data id
       formData.trackers = []; // set data id
-      const item = new FlowTimeTrackerItem();
-      formData.trackers.push(item);
     }
 
     this.hideFloatLayer();
@@ -281,7 +283,7 @@ export class App {
       this.timeCountRun();
     }, 1000);
   }
-// 
+  //
   timeCountPause() {
     if (this.timeCountId) {
       clearTimeout(this.timeCountId);
@@ -389,7 +391,7 @@ export class App {
     if (type == "progressList" || type == "doneList") {
       const selectTrackerItem = this.data.get("selectTrackerItem", null);
       if (selectTrackerItem && selectTrackerItem.id == id) {
-        this.cancelSelectTracker();
+        this.cancelSelectTracker(window.event);
       }
     }
 
@@ -402,6 +404,14 @@ export class App {
   // show Edite When double-clicking on a page card
   dblclick(type, listName, e, el, id, domId) {
     var now = new Date().getTime();
+    stopEvent(e);
+
+    if (!e.target) {
+      return;
+    }
+    if (e.target.classList.contains("out-pointer")) {
+      return;
+    }
 
     var x = now - this.prev;
     var tmr;
@@ -446,7 +456,7 @@ export class App {
     this.data.onlySet({
       editTimeTracker: true,
     });
-    this.cancelSelectTracker();
+    this.cancelSelectTracker(window.event);
   }
 // Used in tandem with the previous method
   saveAddFlowTimeTracker() {
@@ -462,11 +472,6 @@ export class App {
     data.name = name;
     data.start = getUnixSeconds();
 
-    const item = new FlowTimeTrackerItem();
-    item.start = data.start;
-    data.trackers.push(item);
-
-    console.log(data);
     this.editListItem("progressList", data, true);
     this.viewRender();
   }
@@ -498,19 +503,25 @@ export class App {
     return null;
   }
 // Stop Card Timer
-  editTrackerItem(id) {
+  startTrackerItem(e, id) {
+    stopEvent(e);
+
     const selectItem = this.findOneTrackerItem(id);
 
     if (!selectItem) {
       return;
     }
-
     kvdb.set("selectTrackerItem", selectItem);
-    this.data.set({
+    this.data.onlySet({
       selectTrackerItem: selectItem,
     });
+
+    this.editFlowTimeTracker("new");
+
+    this.viewRender();
     this.updateSelectTrackerStatus();
   }
+
 // with the next 3 methods forming the drag and drop
   getSelectTrackerLast() {
     const tracker = this.data.get("selectTrackerItem", null);
@@ -529,6 +540,18 @@ export class App {
       return;
     }
     const rest = typeof lastItem.rest != "undefined" ? lastItem.rest : 0;
+    const end = typeof lastItem.end != "undefined" ? lastItem.end : 0;
+    if (end > 0) {
+      if (this.trackerTimer) {
+        clearTimeout(this.trackerTimer);
+      }
+      const el = document.getElementById("trackerTimer");
+      if (el) {
+        el.innerHTML = formatTime(0);
+      }
+      return;
+    }
+
     if (rest > 0) {
       this.doUpdateTrackerIme(rest, lastItem.end);
     } else {
@@ -551,55 +574,78 @@ export class App {
     }, 300);
   }
 
-  cancelSelectTracker() {
-    this.data.set({
+  cancelSelectTracker(e) {
+    stopEvent(e);
+
+    this.data.onlySet({
       selectTrackerItem: null,
     });
     kvdb.del("selectTrackerItem");
+    this.viewRender();
+
+    this.editFlowTimeTracker("stop");
+
     this.updateSelectTrackerStatus();
   }
 // Events for the three buttons in the header
   editFlowTimeTracker(type) {
     const tracker = this.data.get("selectTrackerItem", null);
-    if (!tracker || !tracker.trackers || tracker.trackers.length < 1) {
+    if (!tracker) {
       if (this.trackerTimer) {
         clearTimeout(this.trackerTimer);
       }
       return null;
     }
-    const lastItem = tracker.trackers[tracker.trackers.length - 1];
 
+    let lastItem;
+    if (!tracker.trackers || tracker.trackers.length < 1) {
+      tracker.trackers = [];
+      lastItem = new FlowTimeTrackerItem();
+      lastItem.start = 1;
+      lastItem.rest = lastItem.start;
+      lastItem.end = lastItem.rest;
+    } else {
+      lastItem = tracker.trackers[tracker.trackers.length - 1];
+    }
     const rest = lastItem.rest ? lastItem.rest : 0;
+
     if (rest > 0) {
       if (type == "rest") {
         return;
-      } else if (type == "work") {
-        lastItem.end = getUnixSeconds();
+      } else if (type == "new") {
+        if (lastItem.end < 1) {
+          lastItem.end = getUnixSeconds();
+        }
 
         const item = new FlowTimeTrackerItem();
-        item.start = lastItem.end;
+        item.start = getUnixSeconds();
         tracker.trackers.push(item);
-      } else if (type == "break") {
-        lastItem.end = getUnixSeconds();
-        lastItem.break = true;
-
-        const item = new FlowTimeTrackerItem();
-        item.start = lastItem.end;
-        tracker.trackers.push(item);
+      } else if (type == "break" || type == "stop") {
+        if (lastItem.end < 1) {
+          lastItem.end = getUnixSeconds();
+          lastItem.break = type == "break" ? true : false;
+        }
       }
     } else {
       if (type == "rest") {
         lastItem.rest = getUnixSeconds();
-      } else if (type == "work") {
-        return;
-      } else if (type == "break") {
-        lastItem.rest = getUnixSeconds();
-        lastItem.end = lastItem.rest;
-        lastItem.break = true;
+      } else if (type == "break" || type == "new") {
+        if (lastItem.end < 1) {
+          lastItem.rest = getUnixSeconds();
+          lastItem.end = lastItem.rest;
+          lastItem.break = type == "break" ? true : false;
+        }
 
-        const item = new FlowTimeTrackerItem();
-        item.start = lastItem.end;
-        tracker.trackers.push(item);
+        if (type == "new") {
+          const item = new FlowTimeTrackerItem();
+          item.start = getUnixSeconds();
+          tracker.trackers.push(item);
+        }
+      } else if (type == "stop") {
+        if (lastItem.end < 1) {
+          lastItem.rest = getUnixSeconds();
+          lastItem.end = lastItem.rest;
+        }
       }
     }
 
@@ -608,8 +654,12 @@ export class App {
       selectTrackerItem: tracker,
     });
     this.editListItem("progressList", tracker, false);
-    this.viewRender();
+    if (type == "break") {
+      this.cancelSelectTracker(window.event);
+      return;
+    }
 
+    this.viewRender();
     this.updateSelectTrackerStatus();
   }
 
@@ -619,37 +669,35 @@ export class App {
       return;
     }
 
-    tracker.end = getUnixSeconds();
-    for (var i = 0; i < tracker.trackers.length; i++) {
-      const item = tracker.trackers[i];
-      if (item.end > 0) {
-        if (item.rest < 1) {
-          item.rest = item.end;
-        }
-      } else {
-        item.end = tracker.end;
-        if (item.rest < 1) {
-          item.rest = item.end;
+    if (domId == "doneListArae") {
+      tracker.end = getUnixSeconds();
+      for (var i = 0; i < tracker.trackers.length; i++) {
+        const item = tracker.trackers[i];
+        if (item.end > 0) {
+          if (item.rest < 1) {
+            item.rest = item.end;
+          }
+        } else {
+          item.end = tracker.end;
+          if (item.rest < 1) {
+            item.rest = item.end;
+          }
         }
       }
-      console.log("++++++++++++++++++", tracker);
-      // this.editListItem("progressList", tracker, false, true);
-      // this.editListItem("doneList", tracker, true);
-      console.log("domId", domId);
-      if (domId == "doneListArae") {
-        this.editListItem("progressList", tracker, false, true);
-        this.editListItem("doneList", tracker, true);
-      } else {
-        this.editListItem("taskList", tracker, false, true);
-        this.editListItem("progressList", tracker, true);
-      }
+
+      this.editListItem("progressList", tracker, false, true);
+      this.editListItem("doneList", tracker, true);
 
       const selectTrackerItem = this.data.get("selectTrackerItem", null);
       if (selectTrackerItem && selectTrackerItem.id == tracker.id) {
-        this.cancelSelectTracker();
+        this.cancelSelectTracker(window.event);
       } else {
         this.viewRender();
       }
+    } else {
+      this.editListItem("taskList", tracker, false, true);
+      this.editListItem("progressList", tracker, true);
+      this.viewRender();
     }
   }
 
