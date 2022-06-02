@@ -4,7 +4,7 @@
 
   📚 A web app to help students manage their study sessions.
 
-  [**Live Demo —— Activate based on installation instructions →**](http://localhost:8888/)
+  [**Live Demo —— Activate based on ‘Installation Instructions’  →**](http://localhost:8888/)
 
   ![Devices Mockup](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/TheDevicesMockup.png?raw=true)
 
@@ -17,7 +17,7 @@
 * [Installation Instructions](#installation-instructions---steps-guide-to-activate-studbud-web-page)
 * [Can not open the web page?](#all-steps-are-correct-but-still-cant-open-it-%EF%B8%8F-%EF%B8%8F)
 * [Features and Usage Introduction](#features-and-usage-introduction)
-* [The function of ‘Open all groups of links’ is not working?](#still-can-not-open-all-reading-link-after-click-%EF%B8%8F-%EF%B8%8F-%EF%B8%8F)
+* [The function of ‘Open all groups of links’ is not working?](#still-can-not-open-all-reading-link-after-clicking-%EF%B8%8F-%EF%B8%8F-%EF%B8%8F)
 * [Acknowledgement](#-acknowledgement-)
 
 
@@ -111,7 +111,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### 🎉 The website created is now right in front of you !!!🥳🥳🥳
+### 🎉 The website is now activated!!!🥳🥳🥳
 
 <br/>
 
