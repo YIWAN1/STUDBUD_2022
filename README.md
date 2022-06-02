@@ -56,7 +56,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-2. Dragging the whole download folder into an open window of the text editor.
+2. Dragging the whole downloaded folder into an open window of the text editor.
  ![ImportFolder](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/ImportFolder.jpg?raw=true)
 
 <br/>
@@ -77,7 +77,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 3. Delete the `.parcel-cache` and `node_modules` folder folder
+### Step 3. Delete the `.parcel-cache` folder  and `node_modules` folder
 
    ![Delete folders](https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/2e5ff9e212fe8af334cb13aea677320f7a0cddb5/image/Delete%20folders.jpg)
 
@@ -107,7 +107,7 @@ For the users' convenience, many shortcut functions have been added.
 
 <br/>
 
-### Step 8. Return and refresh [**Live Demo →**](http://localhost:8888/) the page
+### Step 8. Return and refresh web page [**Live Demo →**](http://localhost:8888/)  
 
 <br/>
 
@@ -116,8 +116,8 @@ For the users' convenience, many shortcut functions have been added.
 <br/>
 
 ## All steps are correct but still can't open it ⁉️ 🤔️
-If the web page can not open, please ensure you cloned the full code. The computer may not recognise the code and therefore block it.
-This situation has appears in my computer, it blocked `parcelrc` file.
+If the web page can not open, please ensure you cloned the full code. The computer may not recognise some codes and therefore hide them.
+This situation has happened on my computer, which hid the `parcelrc` file.
 
 <br/>
 
@@ -146,7 +146,7 @@ This situation has appears in my computer, it blocked `parcelrc` file.
  
 #### Time Management：
 * Stopwatch Timer ：
-    * The left button is `⏸Stop`, The medium one is `⏹start&End` and the right one is `⤴️Reset-to-Start`
+    * The left button is `⏸Stop`, The middle one is `⏹start&End` and the right one is `⤴️Reset-to-Start`
     * You can see the current time elapsed
     ![Stopwatch Timer](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/StopwatchTimer.jpg?raw=true)    
 #  
@@ -174,7 +174,7 @@ This situation has appears in my computer, it blocked `parcelrc` file.
 <br/>
 
 
-## Still can not open all reading link after click `↗️` ⁉️ 🤔️
+## Still can not open all reading link after clicking `↗️` ⁉️ 🤔️
 If this icon appears on your web page, your browser has default blocked pop-ups, make sure you have selectted 'Always allow’.😉
 <div align="center">
     <img src="https://raw.githubusercontent.com/YIWAN1/STUDBUD-PNG/6bc2206148f6f0a766b678cce9375ee0e01236d8/image/%20blockpopups.jpg" alt="blockpopups">
