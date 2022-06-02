@@ -154,8 +154,8 @@ This situation has happened on my computer, which hid the `parcelrc` file.
     *  Input the task name you want to track time in the top bar, click  `🖋` to save the task table into the 'On Progress' column
     *  Click  `▶️` to start the tracking timer for this round — The middle icon  `🖋`  indicates the tracking of working hours
     *  If you want to take a break you can click on the icon on the far right `☕️`, this will enable the tracking of break times
-    *  If you are interrupted while tracking time, you can press the leftmost icon `⚠️` to interrupt the timer
-    *  Click on `⏹`，End of this round of tracking timings
+    *  Situation A: If you are interrupted while tracking time, you can press the leftmost icon `⚠️` to end this round of timer tracking
+    *  Situation B: If you are not interrupted but want to end the round of timer tracking. Just Click on `⏹`，this round of tracking timings will be ended.
     *  You will see the overall log of time tracked in the column
     ![FlowTimeTracker](https://github.com/YIWAN1/STUDBUD-PNG/blob/main/image/FlowTimeTracker.jpg?raw=true)    
 <br/>
